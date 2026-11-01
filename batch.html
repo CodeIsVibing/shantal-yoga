@@ -139,7 +139,7 @@ li.error .fn span{color:var(--danger)}
     <div class="brand">
       <img src="logo.png" alt="Shantal Yoga">
       <h1>Shrink documents</h1>
-      <p class="lead">Make many Word (.docx) and OpenDocument (.odt) files smaller. Each photo is resized to the size it is shown at in the document, so it stays sharp. Files are handled one at a time on this computer and never uploaded.</p>
+      <p class="lead">Make many Word (.docx) and OpenDocument (.odt) files smaller. Every file is saved as a Word (.docx) file. Each photo is resized to the size it is shown at in the document, so it stays sharp. Files are handled one at a time on this computer and never uploaded.</p>
     </div>
     <a class="back" href="index.html"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Exercise Document</a>
   </header>
@@ -216,6 +216,7 @@ li.error .fn span{color:var(--danger)}
 
 <script>
 (() => {
+  JSZip.defaults.createFolders = false;     // no empty folder entries in the saved files
   const QUALITY = {
     balanced: { dpi: 200, q: 0.82, help: '200 dpi, JPEG 82%. Sharp on screen and on paper, smaller files.' },
     high: { dpi: 300, q: 0.88, help: '300 dpi, JPEG 88%. Print sharpness, files stay a bit larger.' }
@@ -338,9 +339,16 @@ li.error .fn span{color:var(--danger)}
     return (await h.requestPermission({ mode })) === 'granted';
   }
 
+  // Output is always .docx; an .odt whose name clashes with a .docx in the same list gets " (from odt)"
+  function outPath(it) {
+    if (!/\.odt$/i.test(it.path)) return it.path;
+    const p = it.path.replace(/\.odt$/i, '.docx');
+    return st.items.some(x => x !== it && x.path.toLowerCase() === p.toLowerCase()) ? it.path.replace(/\.odt$/i, ' (from odt).docx') : p;
+  }
+
   async function writeOut(it, blob) {
     if (st.outDir) {
-      const parts = it.path.split('/');
+      const parts = outPath(it).split('/');
       const name = parts.pop();
       let dir = st.outDir;
       for (const p of parts.slice(1)) dir = await dir.getDirectoryHandle(p, { create: true });   // keep subfolders below the chosen folder
@@ -352,7 +360,7 @@ li.error .fn span{color:var(--danger)}
     }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = it.name;
+    a.download = outPath(it).split('/').pop();
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 30000);
   }
@@ -361,7 +369,7 @@ li.error .fn span{color:var(--danger)}
   async function holdsOriginals() {
     for (const it of st.items.filter(x => x.status === 'waiting').slice(0, 25)) {
       try {
-        const parts = it.path.split('/'); const name = parts.pop();
+        const parts = outPath(it).split('/'); const name = parts.pop();
         let dir = st.outDir;
         for (const p of parts.slice(1)) dir = await dir.getDirectoryHandle(p);
         const f = await (await dir.getFileHandle(name)).getFile();
@@ -420,17 +428,305 @@ li.error .fn span{color:var(--danger)}
     return need;
   }
 
-  async function odtNeeds(zip) {
-    const need = new Map();
-    for (const part of ['content.xml', 'styles.xml']) {
-      const xml = await zip.file(part)?.async('string');
-      if (!xml) continue;
-      for (const m of xml.matchAll(/<draw:frame\b([^>]*)>([\s\S]*?)<\/draw:frame>/g)) {
-        const href = /<draw:image\b[^>]*xlink:href="([^"]+)"/.exec(m[2])?.[1];
-        if (href) bump(need, decodeURIComponent(href.replace(/^\.\//, '')), toCm(attr(m[1], 'svg:width')), toCm(attr(m[1], 'svg:height')));
+  // ---------- Converting .odt to .docx ----------
+  const ODF = {
+    office: 'urn:oasis:names:tc:opendocument:xmlns:office:1.0',
+    style: 'urn:oasis:names:tc:opendocument:xmlns:style:1.0',
+    text: 'urn:oasis:names:tc:opendocument:xmlns:text:1.0',
+    table: 'urn:oasis:names:tc:opendocument:xmlns:table:1.0',
+    draw: 'urn:oasis:names:tc:opendocument:xmlns:drawing:1.0',
+    fo: 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0',
+    svg: 'urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0',
+    xlink: 'http://www.w3.org/1999/xlink'
+  };
+  const W_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"';
+  const DOCX_MIME = { png: 'image/png', jpeg: 'image/jpeg', gif: 'image/gif', bmp: 'image/bmp', tif: 'image/tiff', tiff: 'image/tiff', emf: 'image/x-emf', wmf: 'image/x-wmf' };
+  const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
+  const at = (el, ns, n) => el.getAttributeNS(ODF[ns], n) || '';
+  const xesc = v => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const twip = cm => Math.round((cm || 0) * 567);
+  const signedCm = v => v && v.trim().startsWith('-') ? -toCm(v.trim().slice(1)) : toCm(v);
+  const unq = v => v.replace(/^['"]|['"]$/g, '');
+
+  function drawingXml(rid, id, cx, cy) {
+    const A = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+    return `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="${id}" name="Picture ${id}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="${A}" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="${A}"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${id}" name="Picture ${id}"/><pic:cNvPicPr><a:picLocks noChangeAspect="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+  }
+
+  // Draws formats Word cannot show (SVG, WebP) into a PNG
+  async function toPng(blob, ext) {
+    try {
+      const url = URL.createObjectURL(new Blob([blob], { type: ext === 'svg' ? 'image/svg+xml' : MIME[ext] || 'image/' + ext }));
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+      const k = Math.min(1, 2400 / Math.max(img.naturalWidth || 800, img.naturalHeight || 600));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round((img.naturalWidth || 800) * k)); c.height = Math.max(1, Math.round((img.naturalHeight || 600) * k));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      return await new Promise(r => c.toBlob(r, 'image/png'));
+    } catch (e) { return null; }
+  }
+
+  async function odtToDocx(src, onStep) {
+    const load = async p => { const x = await src.file(p)?.async('string'); return x ? new DOMParser().parseFromString(x, 'application/xml') : null; };
+    const content = await load('content.xml'), sdoc = await load('styles.xml');
+    const textEl = content?.getElementsByTagNameNS(ODF.office, 'text')[0];
+    if (!textEl) throw new Error('This .odt file has no text to convert');
+    const docs = [sdoc, content].filter(Boolean);
+    const all = (ns, tag) => docs.flatMap(d => [...d.getElementsByTagNameNS(ODF[ns], tag)]);
+
+    // Styles with inheritance
+    const fonts = {};
+    for (const f of all('style', 'font-face')) fonts[at(f, 'style', 'name')] = unq(at(f, 'svg', 'font-family'));
+    const props = el => {
+      const o = {};
+      const t = el.getElementsByTagNameNS(ODF.style, 'text-properties')[0];
+      const pp = el.getElementsByTagNameNS(ODF.style, 'paragraph-properties')[0];
+      if (t) {
+        const fw = at(t, 'fo', 'font-weight'); if (fw) o.b = fw === 'bold' || +fw >= 600;
+        const fs = at(t, 'fo', 'font-style'); if (fs) o.i = fs !== 'normal';
+        const us = at(t, 'style', 'text-underline-style'); if (us) o.u = us !== 'none';
+        const ls = at(t, 'style', 'text-line-through-style'); if (ls) o.s = ls !== 'none';
+        const sz = at(t, 'fo', 'font-size'); if (/pt$/.test(sz)) o.sz = parseFloat(sz);
+        const col = at(t, 'fo', 'color'); if (/^#[0-9a-f]{6}$/i.test(col)) o.color = col.slice(1);
+        const fn = at(t, 'style', 'font-name') || at(t, 'fo', 'font-family'); if (fn) o.font = fonts[fn] || unq(fn);
+        const pos = at(t, 'style', 'text-position'); if (pos) o.va = /^super/.test(pos) || parseFloat(pos) > 0 ? 'superscript' : /^sub/.test(pos) || parseFloat(pos) < 0 ? 'subscript' : '';
       }
+      if (pp) {
+        const al = at(pp, 'fo', 'text-align'); if (al) o.jc = { start: 'left', left: 'left', center: 'center', end: 'right', right: 'right', justify: 'both' }[al];
+        const bb = at(pp, 'fo', 'break-before'); if (bb) o.pbb = bb === 'page';
+        const ba = at(pp, 'fo', 'break-after'); if (ba) o.pba = ba === 'page';
+        for (const [k, n] of [['before', 'margin-top'], ['after', 'margin-bottom'], ['left', 'margin-left'], ['indent', 'text-indent']]) { const v = at(pp, 'fo', n); if (v && !/%$/.test(v)) o[k] = signedCm(v); }
+      }
+      const tc = el.getElementsByTagNameNS(ODF.style, 'table-column-properties')[0];
+      if (tc) o.colW = toCm(at(tc, 'style', 'column-width'));
+      const cp = el.getElementsByTagNameNS(ODF.style, 'table-cell-properties')[0];
+      if (cp) o.border = ['border', 'border-top', 'border-bottom', 'border-left', 'border-right'].some(n => { const v = at(cp, 'fo', n); return v && v !== 'none'; });
+      return o;
+    };
+    const defs = {}, raw = {};
+    for (const d of all('style', 'default-style')) defs[at(d, 'style', 'family')] = props(d);
+    for (const s of all('style', 'style')) raw[at(s, 'style', 'family') + ':' + at(s, 'style', 'name')] = { parent: at(s, 'style', 'parent-style-name'), p: props(s) };
+    const memo = {};
+    const sty = (fam, name) => {
+      if (!name) return {};
+      const k = fam + ':' + name;
+      if (k in memo) return memo[k];
+      memo[k] = {};
+      const r = raw[k];
+      return memo[k] = r ? { ...sty(fam, r.parent), ...r.p } : {};
+    };
+    const listKinds = {};
+    for (const ls of all('text', 'list-style')) {
+      const lv = {};
+      for (const c of ls.children) lv[+at(c, 'text', 'level') || 1] = c.localName === 'list-level-style-number' ? 'num' : c.localName === 'list-level-style-bullet' ? (at(c, 'text', 'bullet-char') || '•') : '';
+      listKinds[at(ls, 'style', 'name')] = lv;
     }
-    return need;
+
+    // Page size and margins from the main master page
+    let pg = { w: 21, h: 29.7, mt: 2, mb: 2, ml: 2, mr: 2 };
+    const masters = sdoc ? [...sdoc.getElementsByTagNameNS(ODF.style, 'master-page')] : [];
+    const master = masters.find(m => at(m, 'style', 'name') === 'Standard') || masters[0];
+    if (master) {
+      const pl = all('style', 'page-layout').find(l => at(l, 'style', 'name') === at(master, 'style', 'page-layout-name'));
+      const pp = pl?.getElementsByTagNameNS(ODF.style, 'page-layout-properties')[0];
+      if (pp) { const g = (n, d) => toCm(at(pp, 'fo', n)) || d; pg = { w: g('page-width', 21), h: g('page-height', 29.7), mt: g('margin-top', 0), mb: g('margin-bottom', 0), ml: g('margin-left', 0), mr: g('margin-right', 0) }; }
+    }
+    const contentW = Math.max(2, pg.w - pg.ml - pg.mr);
+
+    const out = new JSZip();
+    const media = new Map(), exts = new Set();
+    let imgN = 0, docPr = 0;
+    const newPart = () => ({ rels: [], n: 0 });
+    const rel = (part, type, target) => { const id = 'rId' + (++part.n); part.rels.push(`<Relationship Id="${id}" Type="${REL}${type}" Target="${target}"/>`); return id; };
+
+    async function image(part, href) {
+      href = decodeURIComponent(href.replace(/^\.\//, ''));
+      let target = media.get(href);
+      if (!target) {
+        const f = src.file(href);
+        if (!f) return null;
+        let ext = href.split('.').pop().toLowerCase();
+        if (ext === 'jpg') ext = 'jpeg';
+        let data = await f.async('blob');
+        if (!DOCX_MIME[ext]) { data = await toPng(data, ext); ext = 'png'; if (!data) return null; }
+        target = `media/image${++imgN}.${ext}`;
+        out.file('word/' + target, data);
+        exts.add(ext);
+        media.set(href, target);
+      }
+      return rel(part, 'image', target);
+    }
+
+    async function frame(part, fr) {
+      const img = fr.getElementsByTagNameNS(ODF.draw, 'image')[0];
+      const box = fr.getElementsByTagNameNS(ODF.draw, 'text-box')[0];
+      if (img && (!box || !box.contains(img))) {
+        const id = await image(part, at(img, 'xlink', 'href'));
+        if (!id) return '';
+        let w = toCm(at(fr, 'svg', 'width')) || 6, h = toCm(at(fr, 'svg', 'height')) || 4.5;
+        if (w > contentW) { h = h * contentW / w; w = contentW; }
+        return drawingXml(id, ++docPr, Math.round(w * EMU_CM), Math.round(h * EMU_CM));
+      }
+      if (box) {
+        let r = '';
+        for (const c of box.children) if (c.namespaceURI === ODF.text && (c.localName === 'p' || c.localName === 'h')) r += (r ? '<w:r><w:br/></w:r>' : '') + await inline(part, c, sty('paragraph', at(c, 'text', 'style-name')));
+        return r;
+      }
+      return '';
+    }
+
+    const rPr = o => {
+      const f = o.font ? `<w:rFonts w:ascii="${xesc(o.font)}" w:hAnsi="${xesc(o.font)}" w:cs="${xesc(o.font)}" w:eastAsia="${xesc(o.font)}"/>` : '';
+      const x = f + (o.b ? '<w:b/><w:bCs/>' : '') + (o.i ? '<w:i/><w:iCs/>' : '') + (o.s ? '<w:strike/>' : '') + (o.color ? `<w:color w:val="${o.color}"/>` : '')
+        + (o.sz ? `<w:sz w:val="${Math.round(o.sz * 2)}"/><w:szCs w:val="${Math.round(o.sz * 2)}"/>` : '') + (o.u ? '<w:u w:val="single"/>' : '') + (o.va ? `<w:vertAlign w:val="${o.va}"/>` : '');
+      return x ? `<w:rPr>${x}</w:rPr>` : '';
+    };
+    const textRun = (o, t) => t ? `<w:r>${rPr(o)}<w:t xml:space="preserve">${xesc(t)}</w:t></w:r>` : '';
+
+    async function inline(part, el, base) {
+      let r = '';
+      for (const n of el.childNodes) {
+        if (n.nodeType === 3) { r += textRun(base, n.data.replace(/\s+/g, ' ')); continue; }
+        if (n.nodeType !== 1) continue;
+        const ln = n.localName, ns = n.namespaceURI;
+        if (ns === ODF.text && ln === 'span') r += await inline(part, n, { ...base, ...sty('text', at(n, 'text', 'style-name')) });
+        else if (ns === ODF.text && ln === 's') r += textRun(base, ' '.repeat(+at(n, 'text', 'c') || 1));
+        else if (ns === ODF.text && ln === 'tab') r += `<w:r>${rPr(base)}<w:tab/></w:r>`;
+        else if (ns === ODF.text && ln === 'line-break') r += '<w:r><w:br/></w:r>';
+        else if (ns === ODF.draw && ln === 'frame') r += await frame(part, n);
+        else if ((ns === ODF.text && /^(note|tracked-changes|bookmark|bookmark-start|bookmark-end|reference-mark|soft-page-break|change|change-start|change-end)$/.test(ln)) || (ns === ODF.office && ln === 'annotation')) continue;
+        else r += await inline(part, n, base);     // links, fields and other wrappers keep their text
+      }
+      return r;
+    }
+
+    const pPr = (o, extra = '') => {
+      const ind = o.left || o.indent ? `<w:ind w:left="${twip(o.left)}"${o.indent < 0 ? ` w:hanging="${twip(-o.indent)}"` : o.indent ? ` w:firstLine="${twip(o.indent)}"` : ''}/>` : '';
+      return `<w:pPr>${extra}${o.pbb ? '<w:pageBreakBefore/>' : ''}<w:spacing w:before="${twip(Math.max(0, o.before))}" w:after="${twip(Math.max(0, o.after))}"/>${ind}${o.jc ? `<w:jc w:val="${o.jc}"/>` : ''}</w:pPr>`;
+    };
+
+    async function para(part, el, list) {
+      let o = sty('paragraph', at(el, 'text', 'style-name'));
+      const level = el.localName === 'h' ? Math.min(6, +at(el, 'text', 'outline-level') || 1) : 0;
+      let lead = '';
+      if (list) {
+        o = { ...o, left: (o.left || 0) + 0.63 * list.level, indent: -0.63 };
+        if (list.label) lead = textRun(o, list.label) + `<w:r>${rPr(o)}<w:tab/></w:r>`;
+      }
+      const runs = lead + await inline(part, el, o);
+      return `<w:p>${pPr(o, level ? `<w:pStyle w:val="Heading${level}"/>` : '')}${runs}${o.pba ? '<w:r><w:br w:type="page"/></w:r>' : ''}</w:p>`;
+    }
+
+    async function list(part, el, level, inherited) {
+      const kinds = listKinds[at(el, 'text', 'style-name')] || inherited;
+      let x = '', n = 0;
+      for (const item of el.children) {
+        if (item.localName !== 'list-item' && item.localName !== 'list-header') continue;
+        if (item.localName === 'list-item') n++;
+        let first = true;
+        for (const c of item.children) {
+          if (c.localName === 'list') x += await list(part, c, level + 1, kinds);
+          else if (c.localName === 'p' || c.localName === 'h') {
+            const kind = kinds?.[level] ?? '•';
+            const label = first && item.localName === 'list-item' ? (kind === 'num' ? n + '.' : kind) : '';
+            x += await para(part, c, { level, label });
+            first = false;
+          }
+        }
+      }
+      return x;
+    }
+
+    async function table(part, el) {
+      const cols = [];
+      for (const c of el.getElementsByTagNameNS(ODF.table, 'table-column')) {
+        let own = c.parentNode;
+        while (own && !(own.localName === 'table' && own.namespaceURI === ODF.table)) own = own.parentNode;
+        if (own !== el) continue;           // columns of nested tables belong to them
+        const w = sty('table-column', at(c, 'table', 'style-name')).colW || 0;
+        for (let i = 0; i < Math.min(64, +at(c, 'table', 'number-columns-repeated') || 1); i++) cols.push(w);
+      }
+      const rows = [];
+      const collect = p => { for (const c of p.children) { if (c.localName === 'table-row') rows.push(c); else if (/^table-(header-)?rows$/.test(c.localName)) collect(c); } };
+      collect(el);
+      const ncol = Math.max(cols.length, ...rows.map(r => [...r.children].reduce((a, c) => a + (c.localName === 'table-cell' || c.localName === 'covered-table-cell' ? (+at(c, 'table', 'number-columns-repeated') || 1) : 0), 0)), 1);
+      while (cols.length < ncol) cols.push(0);
+      const known = cols.reduce((a, w) => a + w, 0), unknown = cols.filter(w => !w).length;
+      let widths = cols.map(w => w || (unknown ? Math.max(1, (contentW - known) / unknown) : 1));
+      const sum = widths.reduce((a, w) => a + w, 0);
+      if (sum > contentW) widths = widths.map(w => w * contentW / sum);
+      let border = false, body = '';
+      for (const r of rows) {
+        let ci = 0, tr = '';
+        for (const c of r.children) {
+          if (c.localName === 'covered-table-cell') { ci += +at(c, 'table', 'number-columns-repeated') || 1; continue; }
+          if (c.localName !== 'table-cell') continue;
+          const span = Math.max(1, +at(c, 'table', 'number-columns-spanned') || 1);
+          if (sty('table-cell', at(c, 'table', 'style-name')).border) border = true;
+          const w = widths.slice(ci, ci + span).reduce((a, x) => a + x, 0);
+          let inner = await blocks(part, c);
+          if (!inner.endsWith('</w:p>')) inner += '<w:p/>';
+          tr += `<w:tc><w:tcPr><w:tcW w:w="${twip(w)}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ''}</w:tcPr>${inner}</w:tc>`;
+          ci += span;
+        }
+        if (tr) body += `<w:tr>${tr}</w:tr>`;
+      }
+      if (!body) return '';
+      const b = border ? `<w:tblBorders>${['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(s => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')}</w:tblBorders>` : '';
+      return `<w:tbl><w:tblPr><w:tblW w:w="${twip(widths.reduce((a, x) => a + x, 0))}" w:type="dxa"/>${b}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${twip(w)}"/>`).join('')}</w:tblGrid>${body}</w:tbl>`;
+    }
+
+    async function blocks(part, parent, progress) {
+      let x = '';
+      const kids = [...parent.children];
+      for (const [i, c] of kids.entries()) {
+        if (progress && i % 20 === 0) { progress(i / kids.length); await yieldUI(); }
+        const ln = c.localName, ns = c.namespaceURI;
+        if (ns === ODF.text && (ln === 'p' || ln === 'h')) x += await para(part, c);
+        else if (ns === ODF.text && ln === 'list') x += await list(part, c, 1);
+        else if (ns === ODF.table && ln === 'table') x += await table(part, c);
+        else if (ns === ODF.draw && ln === 'frame') { const r = await frame(part, c); if (r) x += `<w:p>${r}</w:p>`; }
+        else if (/^(sequence-decls|variable-decls|user-field-decls|tracked-changes|table-of-content-source|index-title-template)$/.test(ln)) continue;
+        else x += await blocks(part, c);
+      }
+      return x;
+    }
+
+    const doc = newPart();
+    rel(doc, 'styles', 'styles.xml');
+    let body = await blocks(doc, textEl, f => onStep('Converting to .docx', 0.04 + 0.2 * f));
+    if (!body.endsWith('</w:p>')) body += '<w:p/>';
+
+    // Header and footer of the main master page
+    let refs = '';
+    const extraTypes = [];
+    for (const [tag, kind] of [['header', 'hdr'], ['footer', 'ftr']]) {
+      const el = master?.getElementsByTagNameNS(ODF.style, tag)[0];
+      if (!el) continue;
+      const part = newPart();
+      let xml = await blocks(part, el);
+      if (!xml.trim()) continue;
+      if (!xml.endsWith('</w:p>')) xml += '<w:p/>';
+      const name = tag + '1.xml';
+      out.file('word/' + name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind} ${W_NS}>${xml}</w:${kind}>`);
+      if (part.rels.length) out.file(`word/_rels/${name}.rels`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${part.rels.join('')}</Relationships>`);
+      const id = rel(doc, tag, name);
+      refs += `<w:${tag}Reference w:type="default" r:id="${id}"/>`;
+      extraTypes.push(`<Override PartName="/word/${name}" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${tag}+xml"/>`);
+    }
+
+    const sect = `<w:sectPr>${refs}<w:pgSz w:w="${twip(pg.w)}" w:h="${twip(pg.h)}"${pg.w > pg.h ? ' w:orient="landscape"' : ''}/><w:pgMar w:top="${twip(pg.mt)}" w:right="${twip(pg.mr)}" w:bottom="${twip(pg.mb)}" w:left="${twip(pg.ml)}" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>`;
+    out.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${W_NS}><w:body>${body}${sect}</w:body></w:document>`);
+    out.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${doc.rels.join('')}</Relationships>`);
+
+    const d = defs.paragraph || {};
+    const font = d.font || 'Liberation Serif', size = Math.round((d.sz || 12) * 2);
+    const heads = [1, 2, 3, 4, 5, 6].map(n => `<w:style w:type="paragraph" w:styleId="Heading${n}"><w:name w:val="heading ${n}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:outlineLvl w:val="${n - 1}"/></w:pPr></w:style>`).join('');
+    out.file('word/styles.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${xesc(font)}" w:hAnsi="${xesc(font)}" w:eastAsia="${xesc(font)}" w:cs="${xesc(font)}"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>${heads}<w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`);
+    out.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>${['jpeg', 'png', ...[...exts].filter(e => e !== 'jpeg' && e !== 'png')].map(e => `<Default Extension="${e}" ContentType="${DOCX_MIME[e]}"/>`).join('')}<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>${extraTypes.join('')}</Types>`);
+    out.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}officeDocument" Target="word/document.xml"/></Relationships>`);
+    return out;
   }
 
   // ---------- Shrinking one document ----------
@@ -474,20 +770,24 @@ li.error .fn span{color:var(--danger)}
     return { out, outExt };
   }
 
+  // Every document comes out as .docx: .odt files are converted first, then photos are shrunk the same way
   async function shrinkDocument(file, onStep) {
     const cfg = QUALITY[st.quality];
     onStep('Reading the file', 0.02);
     let zip;
     try { zip = await JSZip.loadAsync(file); } catch (e) { throw new Error('Not a valid .docx or .odt file'); }
-    const kind = zip.file('word/document.xml') ? 'docx' : zip.file('content.xml') ? 'odt' : null;
-    if (!kind) throw new Error('Not a Word or OpenDocument text file');
-    const need = kind === 'docx' ? await docxNeeds(zip) : await odtNeeds(zip);
-    const media = Object.keys(zip.files).filter(p => !zip.files[p].dir && (kind === 'docx' ? p.startsWith('word/media/') : p.startsWith('Pictures/')));
+    const converted = !zip.file('word/document.xml');
+    if (converted) {
+      if (!zip.file('content.xml')) throw new Error('Not a Word or OpenDocument text file');
+      zip = await odtToDocx(zip, onStep);
+    }
+    const need = await docxNeeds(zip);
+    const media = Object.keys(zip.files).filter(p => !zip.files[p].dir && p.startsWith('word/media/'));
     const renames = new Map();      // old base name -> new base name
-    const types = new Map();        // new path -> mime (for ODT manifest)
+    const types = new Map();        // old path -> [new path, mime]
     let changed = 0;
     for (const [i, p] of media.entries()) {
-      onStep(`Optimizing photo ${i + 1} of ${media.length}`, 0.05 + 0.85 * i / media.length);
+      onStep(`Optimizing photo ${i + 1} of ${media.length}`, 0.25 + 0.65 * i / media.length);
       await yieldUI();
       const ext = p.split('.').pop().toLowerCase();
       if (!MIME[ext] || ext === 'gif') continue;
@@ -500,50 +800,34 @@ li.error .fn span{color:var(--danger)}
       let np = same ? p : p.replace(/\.[^./]+$/, '.' + r.outExt);
       for (let n = 2; !same && zip.file(np); n++) np = p.replace(/\.[^./]+$/, `-${n}.${r.outExt}`);
       if (np !== p) { zip.remove(p); renames.set(p.split('/').pop(), np.split('/').pop()); types.set(p, [np, MIME[r.outExt]]); }
-      zip.file(np, r.out, { createFolders: false });
+      zip.file(np, r.out);
       changed++;
     }
 
     if (renames.size) {
       onStep('Updating references', 0.9);
-      if (kind === 'docx') {
-        for (const rp of Object.keys(zip.files).filter(p => p.endsWith('.rels'))) {
-          const s = await zip.file(rp).async('string');
-          const u = s.replace(/Target="([^"]+)"/g, (m, t) => {
-            const base = t.split('/').pop(), nb = renames.get(base);
-            return nb && /media\//.test(t) ? `Target="${t.slice(0, -base.length)}${nb}"` : m;
-          });
-          if (u !== s) zip.file(rp, u);
-        }
-        let ct = await zip.file('[Content_Types].xml').async('string');
-        for (const e of ['jpeg', 'png']) if (!new RegExp(`Extension="${e}"`, 'i').test(ct)) ct = ct.replace('</Types>', `<Default Extension="${e}" ContentType="image/${e}"/></Types>`);
-        const reEsc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        for (const [oldP, [newP, mime]] of types) ct = ct.replace(new RegExp(`PartName="/${reEsc(oldP)}" ContentType="[^"]*"`), `PartName="/${newP}" ContentType="${mime}"`);
-        zip.file('[Content_Types].xml', ct);
-      } else {
-        for (const part of Object.keys(zip.files).filter(p => p.endsWith('.xml') && !p.startsWith('META-INF/'))) {
-          let s = await zip.file(part).async('string'), u = s;
-          for (const [ob, nb] of renames) u = u.split(`Pictures/${ob}"`).join(`Pictures/${nb}"`);
-          if (u !== s) zip.file(part, u);
-        }
-        let man = await zip.file('META-INF/manifest.xml').async('string');
-        man = man.replace(/<manifest:file-entry\b[^>]*\/>/g, tag => {
-          const fp = attr(tag, 'manifest:full-path');
-          const hit = fp && types.get(fp);
-          return hit ? tag.replace(`"${fp}"`, `"${hit[0]}"`).replace(/manifest:media-type="[^"]*"/, `manifest:media-type="${hit[1]}"`) : tag;
+      for (const rp of Object.keys(zip.files).filter(p => p.endsWith('.rels'))) {
+        const s = await zip.file(rp).async('string');
+        const u = s.replace(/Target="([^"]+)"/g, (m, t) => {
+          const base = t.split('/').pop(), nb = renames.get(base);
+          return nb && /media\//.test(t) ? `Target="${t.slice(0, -base.length)}${nb}"` : m;
         });
-        zip.file('META-INF/manifest.xml', man);
+        if (u !== s) zip.file(rp, u);
       }
+      let ct = await zip.file('[Content_Types].xml').async('string');
+      for (const e of ['jpeg', 'png']) if (!new RegExp(`Extension="${e}"`, 'i').test(ct)) ct = ct.replace('</Types>', `<Default Extension="${e}" ContentType="image/${e}"/></Types>`);
+      const reEsc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      for (const [oldP, [newP, mime]] of types) ct = ct.replace(new RegExp(`PartName="/${reEsc(oldP)}" ContentType="[^"]*"`), `PartName="/${newP}" ContentType="${mime}"`);
+      zip.file('[Content_Types].xml', ct);
     }
 
     onStep('Packing the document', 0.92);
-    if (kind === 'odt' && zip.file('mimetype')) zip.file('mimetype', await zip.file('mimetype').async('string'), { compression: 'STORE' });
     const out = await zip.generateAsync({
       type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 },
-      mimeType: kind === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/vnd.oasis.opendocument.text'
+      mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     }, meta => onStep('Packing the document', 0.92 + 0.07 * meta.percent / 100));
-    // If nothing got smaller, keep the original bytes so the output folder is still complete
-    return out.size < file.size ? { blob: out, changed } : { blob: file, changed: 0 };
+    // A .docx that did not get smaller is saved as the original bytes, so the output folder is still complete
+    return converted || out.size < file.size ? { blob: out, changed, converted } : { blob: file, changed: 0, converted };
   }
 
   // ---------- Running the batch ----------
@@ -590,7 +874,8 @@ li.error .fn span{color:var(--danger)}
       it.step = 'Saving'; it.progress = 0.995; renderCurrent(it);
       await writeOut(it, res.blob);
       it.status = 'done'; it.before = file.size; it.after = res.blob.size;
-      it.msg = res.changed ? `${res.changed} ${res.changed === 1 ? 'photo' : 'photos'} optimized` : 'Already small, saved unchanged';
+      const photos = res.changed ? `${res.changed} ${res.changed === 1 ? 'photo' : 'photos'} optimized` : '';
+      it.msg = res.converted ? `Converted to .docx${photos ? ', ' + photos : ''}` : photos || 'Already small, saved unchanged';
       st.done[it.key] = { name: it.name, before: it.before, after: it.after, at: Date.now() };
       await put('done', st.done);
     } catch (e) {

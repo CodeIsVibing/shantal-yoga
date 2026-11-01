@@ -19,7 +19,7 @@ Open **Shrink many files** (or `batch.html`) to make a whole set of Word (.docx)
 2. Pick the photo quality and, in Chrome or Edge, an empty folder for the finished files. Other browsers download each file as soon as it is finished.
 3. Press **Start**. Files are handled one at a time, with progress for the whole batch and for the current file.
 
-Photos are resized to the size they are shown at in the document, at 200 or 300 dpi. The originals are never changed. Finished files are remembered, so after a crash or a closed tab the page continues where it stopped and skips what is already done.
+Every file is saved as a Word (.docx) file: .odt files are converted, with text formatting, headings, lists, tables, photos, page breaks, header and footer. Photos are resized to the size they are shown at in the document, at 200 or 300 dpi. The originals are never changed. Finished files are remembered, so after a crash or a closed tab the page continues where it stopped and skips what is already done.
 
 ## Run locally
 Open `index.html` by double-clicking it. No internet connection needed.

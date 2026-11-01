@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.3.0] - 2026-11-01
+
+### Changed
+- Shrink documents now saves every file as Word (.docx), whatever the original format.
+
+### Added
+- Built-in .odt to .docx conversion: text formatting, headings, bullet and numbered lists, tables (column widths, merged cells, borders), photos at their frame size, SVG and WebP drawn as PNG, text boxes, tabs and line breaks, page breaks, header and footer, page size and margins.
+- When an .odt and a .docx in the same list share a name, the converted file is saved as "name (from odt).docx".
+
 ## [1.2.0] - 2026-11-01
 
 ### Added
