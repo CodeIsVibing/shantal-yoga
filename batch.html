@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shrink Documents · Shantal Yoga</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="vendor/jszip.min.js"></script>
+<style>
+:root{
+  --canvas:#f2f2f4; --panel:#fff; --panel-line:rgba(0,0,0,.06);
+  --ink:#1d1d1f; --ink-2:#3a3a3c; --muted:#6e6e73; --faint:#aeaeb2;
+  --accent:#0071e3; --accent-press:#0062c4; --accent-ink:#fff; --accent-soft:rgba(0,113,227,.1);
+  --danger:#d70015; --ok:#248a3d; --warn:#b25000;
+  --ctrl:rgba(0,0,0,.05); --ctrl-hover:rgba(0,0,0,.08); --seg-on:#fff;
+  --ease:cubic-bezier(.23,1,.32,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --canvas:#1c1c1e; --panel:#2c2c2e; --panel-line:rgba(255,255,255,.06);
+    --ink:#f5f5f7; --ink-2:#d1d1d6; --muted:#98989d; --faint:#636366;
+    --accent:#0a84ff; --accent-press:#0070e0; --accent-soft:rgba(10,132,255,.18); --ok:#30d158; --warn:#ff9f0a; --danger:#ff453a;
+    --ctrl:rgba(255,255,255,.08); --ctrl-hover:rgba(255,255,255,.13); --seg-on:#636366;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--canvas);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.wrap{max-width:940px;margin:0 auto;padding:32px 20px 80px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.brand img{width:150px;height:auto;display:block;margin-bottom:10px}
+@media (prefers-color-scheme:dark){ .brand img{filter:invert(1)} }
+h1{margin:0;font-size:28px;line-height:1.1;letter-spacing:-.02em;font-weight:700}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14.5px;max-width:560px}
+.back{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;background:var(--ctrl);color:var(--ink);text-decoration:none;font-weight:500;font-size:13px;white-space:nowrap;transition:background-color 150ms ease}
+.back:hover{background:var(--ctrl-hover)}
+
+.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:14px}
+.card{background:var(--panel);border-radius:16px;box-shadow:0 0 0 1px var(--panel-line),0 1px 2px rgba(0,0,0,.03);padding:18px}
+.card h2{margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.help{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.lbl{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.field+.field{margin-top:14px}
+
+.drop{border:1.5px dashed var(--faint);border-radius:14px;padding:18px;text-align:center;transition:border-color 150ms ease,background-color 150ms ease}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop p{margin:0 0 12px;color:var(--ink-2)}
+.drop .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+.seg{display:flex;padding:2px;border-radius:10px;background:var(--ctrl)}
+.seg button{flex:1;border:0;background:none;border-radius:8px;height:30px;padding:0 10px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;transition:color 150ms ease,background-color 150ms ease}
+.seg button[aria-pressed=true]{background:var(--seg-on);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg button:disabled{cursor:default}
+
+.btn{border:0;height:36px;border-radius:11px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:600;white-space:nowrap;transition:background-color 150ms ease,transform 120ms ease,opacity 150ms ease}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.ghost{background:var(--ctrl);color:var(--ink)}
+.btn.ghost:hover:not(:disabled){background:var(--ctrl-hover)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover:not(:disabled){background:var(--accent-press)}
+.btn.big{height:44px;font-size:15px;border-radius:12px;padding:0 22px}
+.btn.small{height:28px;font-size:12.5px;border-radius:8px;padding:0 10px}
+.folder{display:flex;align-items:center;gap:10px}
+.folder b{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.folder b.none{color:var(--muted);font-weight:400}
+
+.banner{display:none;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--accent-soft);color:var(--ink);margin-bottom:14px}
+.banner.show{display:flex}
+.banner p{flex:1;margin:0;font-size:13.5px}
+
+/* Progress */
+.progress-card{margin-bottom:14px}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.totals{flex:1;min-width:240px}
+.totals .big{font-size:22px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.totals .sub{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:8px}
+.bar{height:8px;border-radius:999px;background:var(--ctrl);overflow:hidden;margin:14px 0 0}
+.bar i{display:block;height:100%;width:100%;background:var(--accent);border-radius:inherit;transform-origin:left;transform:scaleX(0);transition:transform 300ms var(--ease)}
+.bar.thin{height:5px;margin-top:8px}
+.current{margin-top:14px;padding-top:14px;border-top:1px solid var(--panel-line);display:none}
+.current.show{display:block}
+.current .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.current .step{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* File list */
+.list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.list-head h2{margin:0}
+.counts{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--ctrl);color:var(--muted);font-variant-numeric:tabular-nums}
+.files{list-style:none;margin:0;padding:0}
+.files li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;border-top:1px solid var(--panel-line)}
+.files li:first-child{border-top:0}
+.st{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--ctrl);color:var(--muted)}
+.st svg{width:12px;height:12px;stroke-width:2.4}
+li.done .st{background:var(--ok);color:#fff}
+li.skipped .st{background:var(--ctrl);color:var(--ok)}
+li.error .st{background:var(--danger);color:#fff}
+li.working .st{background:var(--accent);color:#fff}
+li.working .st svg{animation:spin 1s linear infinite}
+li.needs .st{color:var(--warn)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fn{min-width:0}
+.fn b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fn span{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li.error .fn span{color:var(--danger)}
+.res{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.res b{color:var(--ok);font-weight:600}
+.empty{color:var(--muted);text-align:center;padding:26px 0 18px;margin:0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:11;transform:translate(-50%,8px);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:14px;background:rgba(29,29,31,.92);color:#fff;font-size:14px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,.25);transition:opacity 200ms var(--ease),transform 200ms var(--ease);max-width:calc(100vw - 24px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+
+@media (max-width:760px){
+  header{flex-direction:column;align-items:flex-start}
+  .grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-property:opacity,background-color,color!important}
+  li.working .st svg{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="logo.png" alt="Shantal Yoga">
+      <h1>Shrink documents</h1>
+      <p class="lead">Make many Word (.docx) and OpenDocument (.odt) files smaller. Each photo is resized to the size it is shown at in the document, so it stays sharp. Files are handled one at a time on this computer and never uploaded.</p>
+    </div>
+    <a class="back" href="index.html"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Exercise Document</a>
+  </header>
+
+  <div class="banner" id="banner" role="status"><p id="bannerText"></p><button type="button" class="btn primary small" id="bannerBtn">Resume</button></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1 · Add files</h2>
+      <div class="drop" id="drop">
+        <p>Drop .docx and .odt files or a whole folder here</p>
+        <div class="row">
+          <button type="button" class="btn ghost" id="addFiles"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>Add files</button>
+          <button type="button" class="btn ghost" id="addFolder"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Add folder</button>
+        </div>
+      </div>
+      <p class="help">Files that were already finished are skipped automatically, even after you close the page.</p>
+    </section>
+
+    <section class="card">
+      <h2>2 · Settings</h2>
+      <div class="field">
+        <span class="lbl">Photo quality</span>
+        <div class="seg" role="group" aria-label="Photo quality">
+          <button type="button" data-q="balanced">Balanced</button>
+          <button type="button" data-q="high">High quality</button>
+        </div>
+        <p class="help" id="qHelp"></p>
+      </div>
+      <div class="field">
+        <span class="lbl">Save finished files to</span>
+        <div class="folder"><b id="outName" class="none">Downloads (each file right after it is finished)</b><button type="button" class="btn ghost small" id="pickOut">Choose folder</button></div>
+        <p class="help" id="outHelp">Choose an empty folder. The original files are never changed.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="card progress-card" aria-live="polite">
+    <div class="top">
+      <div class="totals">
+        <div class="big" id="tBig">No files yet</div>
+        <div class="sub" id="tSub">Add files to start.</div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn ghost" id="pause" hidden>Pause after this file</button>
+        <button type="button" class="btn primary big" id="start" disabled>Start</button>
+      </div>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="barAll"></i></div>
+    <div class="current" id="current">
+      <div class="name" id="curName"></div>
+      <div class="step" id="curStep"></div>
+      <div class="bar thin" aria-hidden="true"><i id="barCur"></i></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="list-head">
+      <h2>Files</h2>
+      <div class="counts" id="counts"></div>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="btn ghost small" id="retry" hidden>Retry failed</button>
+        <button type="button" class="btn ghost small" id="clear" hidden>Clear list</button>
+      </div>
+    </div>
+    <ul class="files" id="files"></ul>
+    <p class="empty" id="empty">The list of files appears here: waiting, working and finished.</p>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="filePicker" accept=".docx,.odt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text" multiple hidden>
+<input type="file" id="dirPicker" webkitdirectory multiple hidden>
+
+<script>
+(() => {
+  const QUALITY = {
+    balanced: { dpi: 200, q: 0.82, help: '200 dpi, JPEG 82%. Sharp on screen and on paper, smaller files.' },
+    high: { dpi: 300, q: 0.88, help: '300 dpi, JPEG 88%. Print sharpness, files stay a bit larger.' }
+  };
+  const MAX_UNKNOWN = 2400;           // longest side for photos whose display size is unknown
+  const MIN_GAIN = 0.92;              // keep the original photo unless the new one is at least 8% smaller
+  const SMALL = 30 * 1024;            // photos under 30 KB are left alone
+  const PAUSE_BETWEEN = 400;          // ms rest between files
+  const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', bmp: 'image/bmp', webp: 'image/webp', gif: 'image/gif', tif: 'image/tiff', tiff: 'image/tiff' };
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => document.querySelectorAll(s);
+  const hasFS = 'showDirectoryPicker' in window;
+  const st = { items: [], done: {}, attempts: {}, quality: 'high', outDir: null, inDirs: [], running: false, pause: false };
+  const keyOf = f => `${f.name}|${f.size}|${f.lastModified}`;
+  const fmt = b => b >= 1073741824 ? (b / 1073741824).toFixed(2) + ' GB' : b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // ---------- Storage (IndexedDB): finished list, queue, folders ----------
+  let dbp;
+  const db = () => dbp ||= new Promise((res, rej) => {
+    const r = indexedDB.open('shantal-batch', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  async function put(k, v) { try { const t = (await db()).transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); await new Promise(r => { t.oncomplete = r; t.onerror = r; }); } catch (e) {} }
+  async function get(k) { try { const s = (await db()).transaction('kv').objectStore('kv'); return await new Promise(r => { const q = s.get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch (e) { return undefined; } }
+  const saveQueue = () => put('queue', st.items.map(({ key, name, path, size, status, before, after, msg, handle }) => ({ key, name, path, size, status: status === 'working' ? 'waiting' : status, before, after, msg, handle })));
+
+  // ---------- Adding files ----------
+  const isDoc = n => /\.(docx|odt)$/i.test(n) && !/^(~\$|\.)/.test(n);
+  function addEntries(list) {
+    let added = 0, again = 0;
+    for (const { file, handle, path } of list) {
+      if (!isDoc(file?.name || handle?.name || '')) continue;
+      const key = file ? keyOf(file) : path + '|' + handle.name;
+      let it = st.items.find(x => x.key === key);
+      if (it) {
+        if (file) it.file = file;
+        if (handle) it.handle = handle;
+        if (it.status === 'needs') { it.status = 'waiting'; again++; }
+        continue;
+      }
+      it = { key, name: file?.name || handle.name, path: path || file?.webkitRelativePath || file?.name, size: file?.size || 0, file, handle, status: 'waiting' };
+      const d = st.done[key];
+      if (d) Object.assign(it, { status: 'skipped', before: d.before, after: d.after });
+      st.items.push(it);
+      added++;
+    }
+    if (added || again) toast(`${added + again} ${added + again === 1 ? 'file' : 'files'} added.`);
+    else if (list.length) toast('No new .docx or .odt files found.');
+    saveQueue();
+    render();
+  }
+
+  async function* walk(dir, prefix = '') {
+    for await (const [name, h] of dir.entries()) {
+      if (h.kind === 'file' && isDoc(name)) yield { handle: h, path: prefix + name };
+      else if (h.kind === 'directory' && !(st.outDir && await h.isSameEntry(st.outDir))) yield* walk(h, prefix + name + '/');
+    }
+  }
+  async function addDir(dir) {
+    if (!st.inDirs.some(d => d.name === dir.name)) st.inDirs.push(dir);
+    put('inDirs', st.inDirs);
+    const list = [];
+    for await (const e of walk(dir, dir.name + '/')) {
+      const file = await e.handle.getFile();
+      list.push({ file, handle: e.handle, path: e.path });
+    }
+    addEntries(list);
+  }
+
+  $('#addFiles').addEventListener('click', async () => {
+    if ('showOpenFilePicker' in window) {
+      try {
+        const hs = await showOpenFilePicker({ multiple: true, types: [{ description: 'Documents', accept: { 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.oasis.opendocument.text': ['.odt'] } }] });
+        addEntries(await Promise.all(hs.map(async h => ({ file: await h.getFile(), handle: h }))));
+      } catch (e) {}
+    } else { $('#filePicker').value = ''; $('#filePicker').click(); }
+  });
+  $('#filePicker').addEventListener('change', e => addEntries([...e.target.files].map(file => ({ file }))));
+  $('#addFolder').addEventListener('click', async () => {
+    if (hasFS) { try { await addDir(await showDirectoryPicker({ id: 'docs-in' })); } catch (e) {} }
+    else { $('#dirPicker').value = ''; $('#dirPicker').click(); }
+  });
+  $('#dirPicker').addEventListener('change', e => addEntries([...e.target.files].map(file => ({ file, path: file.webkitRelativePath }))));
+
+  const drop = $('#drop');
+  document.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  document.addEventListener('dragleave', e => { if (!e.relatedTarget) drop.classList.remove('over'); });
+  document.addEventListener('drop', async e => {
+    e.preventDefault(); drop.classList.remove('over');
+    const items = [...e.dataTransfer.items];
+    const loose = [];
+    for (const i of items) {
+      const h = i.getAsFileSystemHandle ? await i.getAsFileSystemHandle().catch(() => null) : null;
+      if (h?.kind === 'directory') { await addDir(h); continue; }
+      const file = i.getAsFile();
+      if (file) loose.push({ file, handle: h?.kind === 'file' ? h : undefined });
+    }
+    if (loose.length) addEntries(loose);
+  });
+
+  // ---------- Output folder ----------
+  $('#pickOut').addEventListener('click', async () => {
+    if (!hasFS) return toast('This browser saves each finished file to Downloads.');
+    try {
+      const dir = await showDirectoryPicker({ id: 'docs-out', mode: 'readwrite' });
+      for (const d of st.inDirs) if (await d.isSameEntry(dir)) return toast('This is the folder with the originals. Choose another folder.');
+      st.outDir = dir;
+      put('outDir', dir);
+      render();
+    } catch (e) {}
+  });
+
+  async function permitted(h, mode) {
+    if (!h?.queryPermission) return true;
+    if (await h.queryPermission({ mode }) === 'granted') return true;
+    return (await h.requestPermission({ mode })) === 'granted';
+  }
+
+  async function writeOut(it, blob) {
+    if (st.outDir) {
+      const parts = it.path.split('/');
+      const name = parts.pop();
+      let dir = st.outDir;
+      for (const p of parts.slice(1)) dir = await dir.getDirectoryHandle(p, { create: true });   // keep subfolders below the chosen folder
+      const fh = await dir.getFileHandle(name, { create: true });
+      const w = await fh.createWritable();
+      await w.write(blob);
+      await w.close();
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = it.name;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  }
+
+  // Never overwrite originals: refuse a folder that already holds files with the same name and size
+  async function holdsOriginals() {
+    for (const it of st.items.filter(x => x.status === 'waiting').slice(0, 25)) {
+      try {
+        const parts = it.path.split('/'); const name = parts.pop();
+        let dir = st.outDir;
+        for (const p of parts.slice(1)) dir = await dir.getDirectoryHandle(p);
+        const f = await (await dir.getFileHandle(name)).getFile();
+        if (f.size === it.size && f.lastModified === it.file?.lastModified) return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+
+  // ---------- Measuring how big each photo is shown ----------
+  const EMU_CM = 360000;
+  const attr = (s, n) => { const m = s.match(new RegExp(`\\b${n}="([^"]*)"`)); return m ? m[1] : null; };
+  const toCm = v => {
+    const m = /^([\d.]+)\s*(cm|mm|in|pt|pc|px)?$/.exec(v || '');
+    if (!m) return 0;
+    const n = +m[1];
+    return { cm: n, mm: n / 10, in: n * 2.54, pt: n / 72 * 2.54, pc: n / 6 * 2.54, px: n / 96 * 2.54 }[m[2] || 'cm'];
+  };
+  function bump(map, path, wCm, hCm) {
+    if (!path || !(wCm > 0) || !(hCm > 0)) return;
+    const o = map.get(path) || { wCm: 0, hCm: 0 };
+    map.set(path, { wCm: Math.max(o.wCm, wCm), hCm: Math.max(o.hCm, hCm) });
+  }
+
+  async function docxNeeds(zip) {
+    const need = new Map();
+    const parts = Object.keys(zip.files).filter(p => /^word\/[^/]+\.xml$/.test(p));
+    for (const part of parts) {
+      const relPath = part.replace(/^word\//, 'word/_rels/') + '.rels';
+      const relXml = await zip.file(relPath)?.async('string');
+      if (!relXml) continue;
+      const rels = {};
+      for (const m of relXml.matchAll(/<Relationship\b[^>]*>/g)) {
+        const id = attr(m[0], 'Id'), t = attr(m[0], 'Target');
+        if (id && t && attr(m[0], 'TargetMode') !== 'External') rels[id] = decodeURIComponent(new URL(t, 'http://x/word/').pathname.slice(1));
+      }
+      const xml = await zip.file(part).async('string');
+      for (const m of xml.matchAll(/<wp:(inline|anchor)\b[\s\S]*?<\/wp:\1>/g)) {
+        const d = m[0];
+        const ext = /<wp:extent\b[^>]*cx="(\d+)"[^>]*cy="(\d+)"/.exec(d);
+        const id = /r:embed="([^"]+)"/.exec(d)?.[1];
+        if (!ext || !id) continue;
+        const crop = /<a:srcRect\b([^>]*)\/?>/.exec(d)?.[1] || '';
+        const c = n => (+(attr(crop, n) || 0)) / 100000;
+        const fx = Math.min(1, Math.max(0.05, 1 - c('l') - c('r')));
+        const fy = Math.min(1, Math.max(0.05, 1 - c('t') - c('b')));
+        bump(need, rels[id], ext[1] / EMU_CM / fx, ext[2] / EMU_CM / fy);
+      }
+      for (const m of xml.matchAll(/<v:shape\b([^>]*)>([\s\S]*?)<\/v:shape>/g)) {
+        const style = attr(m[1], 'style') || '';
+        const id = /<v:imagedata\b[^>]*r:id="([^"]+)"/.exec(m[2])?.[1];
+        const w = /width:\s*([\d.]+\w*)/.exec(style)?.[1], h = /height:\s*([\d.]+\w*)/.exec(style)?.[1];
+        if (id) bump(need, rels[id], toCm(w), toCm(h));
+      }
+    }
+    return need;
+  }
+
+  async function odtNeeds(zip) {
+    const need = new Map();
+    for (const part of ['content.xml', 'styles.xml']) {
+      const xml = await zip.file(part)?.async('string');
+      if (!xml) continue;
+      for (const m of xml.matchAll(/<draw:frame\b([^>]*)>([\s\S]*?)<\/draw:frame>/g)) {
+        const href = /<draw:image\b[^>]*xlink:href="([^"]+)"/.exec(m[2])?.[1];
+        if (href) bump(need, decodeURIComponent(href.replace(/^\.\//, '')), toCm(attr(m[1], 'svg:width')), toCm(attr(m[1], 'svg:height')));
+      }
+    }
+    return need;
+  }
+
+  // ---------- Shrinking one document ----------
+  const yieldUI = () => new Promise(r => setTimeout(r, 0));
+
+  function hasAlpha(ctx, w, h) {
+    const d = ctx.getImageData(0, 0, w, h).data;
+    for (let i = 3; i < d.length; i += 4) if (d[i] < 250) return true;
+    return false;
+  }
+
+  async function shrinkImage(blob, ext, need, cfg) {
+    const bmp = await createImageBitmap(new Blob([blob], { type: MIME[ext] }));
+    let scale;
+    if (need) scale = Math.min(1, Math.max((need.wCm / 2.54 * cfg.dpi) / bmp.width, (need.hCm / 2.54 * cfg.dpi) / bmp.height));
+    else scale = Math.min(1, MAX_UNKNOWN / Math.max(bmp.width, bmp.height));
+    const isJpeg = ext === 'jpg' || ext === 'jpeg';
+    // Leave lean JPEGs alone when there is nothing to downsize: re-encoding would only lose quality
+    if (isJpeg && scale > 0.9 && blob.size / (bmp.width * bmp.height) < 0.35) { bmp.close(); return null; }
+    const w = Math.max(1, Math.round(bmp.width * scale)), h = Math.max(1, Math.round(bmp.height * scale));
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d', { willReadFrequently: !isJpeg });
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bmp, 0, 0, w, h);
+    bmp.close();
+    const alpha = !isJpeg && hasAlpha(ctx, w, h);
+    let out, outExt;
+    if (alpha) {
+      out = await new Promise(r => c.toBlob(r, 'image/png'));
+      outExt = 'png';
+    } else {
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      out = await new Promise(r => c.toBlob(r, 'image/jpeg', cfg.q));
+      outExt = 'jpeg';
+    }
+    c.width = c.height = 0;
+    if (!out || out.size >= blob.size * MIN_GAIN) return null;
+    return { out, outExt };
+  }
+
+  async function shrinkDocument(file, onStep) {
+    const cfg = QUALITY[st.quality];
+    onStep('Reading the file', 0.02);
+    let zip;
+    try { zip = await JSZip.loadAsync(file); } catch (e) { throw new Error('Not a valid .docx or .odt file'); }
+    const kind = zip.file('word/document.xml') ? 'docx' : zip.file('content.xml') ? 'odt' : null;
+    if (!kind) throw new Error('Not a Word or OpenDocument text file');
+    const need = kind === 'docx' ? await docxNeeds(zip) : await odtNeeds(zip);
+    const media = Object.keys(zip.files).filter(p => !zip.files[p].dir && (kind === 'docx' ? p.startsWith('word/media/') : p.startsWith('Pictures/')));
+    const renames = new Map();      // old base name -> new base name
+    const types = new Map();        // new path -> mime (for ODT manifest)
+    let changed = 0;
+    for (const [i, p] of media.entries()) {
+      onStep(`Optimizing photo ${i + 1} of ${media.length}`, 0.05 + 0.85 * i / media.length);
+      await yieldUI();
+      const ext = p.split('.').pop().toLowerCase();
+      if (!MIME[ext] || ext === 'gif') continue;
+      const blob = await zip.file(p).async('blob');
+      if (blob.size < SMALL) continue;
+      let r;
+      try { r = await shrinkImage(blob, ext, need.get(p), cfg); } catch (e) { continue; }   // photos the browser cannot read stay as they are
+      if (!r) continue;
+      const same = r.outExt === ext || (r.outExt === 'jpeg' && ext === 'jpg');
+      let np = same ? p : p.replace(/\.[^./]+$/, '.' + r.outExt);
+      for (let n = 2; !same && zip.file(np); n++) np = p.replace(/\.[^./]+$/, `-${n}.${r.outExt}`);
+      if (np !== p) { zip.remove(p); renames.set(p.split('/').pop(), np.split('/').pop()); types.set(p, [np, MIME[r.outExt]]); }
+      zip.file(np, r.out, { createFolders: false });
+      changed++;
+    }
+
+    if (renames.size) {
+      onStep('Updating references', 0.9);
+      if (kind === 'docx') {
+        for (const rp of Object.keys(zip.files).filter(p => p.endsWith('.rels'))) {
+          const s = await zip.file(rp).async('string');
+          const u = s.replace(/Target="([^"]+)"/g, (m, t) => {
+            const base = t.split('/').pop(), nb = renames.get(base);
+            return nb && /media\//.test(t) ? `Target="${t.slice(0, -base.length)}${nb}"` : m;
+          });
+          if (u !== s) zip.file(rp, u);
+        }
+        let ct = await zip.file('[Content_Types].xml').async('string');
+        for (const e of ['jpeg', 'png']) if (!new RegExp(`Extension="${e}"`, 'i').test(ct)) ct = ct.replace('</Types>', `<Default Extension="${e}" ContentType="image/${e}"/></Types>`);
+        const reEsc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        for (const [oldP, [newP, mime]] of types) ct = ct.replace(new RegExp(`PartName="/${reEsc(oldP)}" ContentType="[^"]*"`), `PartName="/${newP}" ContentType="${mime}"`);
+        zip.file('[Content_Types].xml', ct);
+      } else {
+        for (const part of Object.keys(zip.files).filter(p => p.endsWith('.xml') && !p.startsWith('META-INF/'))) {
+          let s = await zip.file(part).async('string'), u = s;
+          for (const [ob, nb] of renames) u = u.split(`Pictures/${ob}"`).join(`Pictures/${nb}"`);
+          if (u !== s) zip.file(part, u);
+        }
+        let man = await zip.file('META-INF/manifest.xml').async('string');
+        man = man.replace(/<manifest:file-entry\b[^>]*\/>/g, tag => {
+          const fp = attr(tag, 'manifest:full-path');
+          const hit = fp && types.get(fp);
+          return hit ? tag.replace(`"${fp}"`, `"${hit[0]}"`).replace(/manifest:media-type="[^"]*"/, `manifest:media-type="${hit[1]}"`) : tag;
+        });
+        zip.file('META-INF/manifest.xml', man);
+      }
+    }
+
+    onStep('Packing the document', 0.92);
+    if (kind === 'odt' && zip.file('mimetype')) zip.file('mimetype', await zip.file('mimetype').async('string'), { compression: 'STORE' });
+    const out = await zip.generateAsync({
+      type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 },
+      mimeType: kind === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/vnd.oasis.opendocument.text'
+    }, meta => onStep('Packing the document', 0.92 + 0.07 * meta.percent / 100));
+    // If nothing got smaller, keep the original bytes so the output folder is still complete
+    return out.size < file.size ? { blob: out, changed } : { blob: file, changed: 0 };
+  }
+
+  // ---------- Running the batch ----------
+  let wakeLock = null;
+  async function keepAwake() { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) {} }
+  document.addEventListener('visibilitychange', () => { if (st.running && document.visibilityState === 'visible') keepAwake(); });
+
+  async function start() {
+    if (st.running) return;
+    if (st.outDir) {
+      if (!await permitted(st.outDir, 'readwrite')) return toast('Saving needs permission for the chosen folder.');
+      if (await holdsOriginals()) return toast('This folder seems to hold the original files. Choose an empty folder so originals are never overwritten.');
+    }
+    for (const d of st.inDirs) await permitted(d, 'read').catch(() => false);
+    st.running = true; st.pause = false;
+    $('#banner').classList.remove('show');
+    keepAwake();
+    render();
+    while (!st.pause) {
+      const it = st.items.find(x => x.status === 'waiting');
+      if (!it) break;
+      await runOne(it);
+      await sleep(PAUSE_BETWEEN);
+    }
+    st.running = false;
+    try { await wakeLock?.release(); } catch (e) {}
+    put('current', null);
+    render();
+    const left = st.items.filter(x => x.status === 'waiting').length;
+    toast(st.pause && left ? `Paused. ${left} ${left === 1 ? 'file' : 'files'} left.` : 'All files are finished.');
+  }
+
+  async function runOne(it) {
+    it.status = 'working'; it.msg = ''; it.progress = 0; it.step = 'Starting';
+    st.attempts[it.key] = (st.attempts[it.key] || 0) + 1;
+    await put('current', it.key);
+    await put('attempts', st.attempts);
+    render();
+    try {
+      const file = it.file || (it.handle && await it.handle.getFile());
+      if (!file) throw new Error('File is not available. Add it again.');
+      it.size = file.size;
+      const res = await shrinkDocument(file, (step, p) => { it.step = step; it.progress = p; renderCurrent(it); });
+      it.step = 'Saving'; it.progress = 0.995; renderCurrent(it);
+      await writeOut(it, res.blob);
+      it.status = 'done'; it.before = file.size; it.after = res.blob.size;
+      it.msg = res.changed ? `${res.changed} ${res.changed === 1 ? 'photo' : 'photos'} optimized` : 'Already small, saved unchanged';
+      st.done[it.key] = { name: it.name, before: it.before, after: it.after, at: Date.now() };
+      await put('done', st.done);
+    } catch (e) {
+      it.status = 'error';
+      it.msg = e?.message || 'Something went wrong';
+    }
+    it.file = it.handle ? undefined : it.file;    // free memory when the file can be read again from disk
+    await put('current', null);
+    saveQueue();
+    render();
+  }
+
+  $('#start').addEventListener('click', start);
+  $('#pause').addEventListener('click', () => { st.pause = true; render(); toast('Pausing after the current file.'); });
+  $('#retry').addEventListener('click', () => { st.items.forEach(x => { if (x.status === 'error') { x.status = 'waiting'; st.attempts[x.key] = 0; } }); saveQueue(); render(); start(); });
+  $('#clear').addEventListener('click', () => {
+    st.items = st.items.filter(x => x.status === 'working');
+    saveQueue(); render();
+    toast('List cleared. Finished files are still remembered and will be skipped.');
+  });
+  $$('.seg button').forEach(b => b.addEventListener('click', () => { if (st.running) return; st.quality = b.dataset.q; put('quality', st.quality); render(); }));
+  window.addEventListener('beforeunload', e => { if (st.running) { e.preventDefault(); e.returnValue = ''; } });
+
+  // ---------- Rendering ----------
+  const ICON = {
+    waiting: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    working: '<svg viewBox="0 0 16 16"><path d="M8 2.5a5.5 5.5 0 1 1-5.5 5.5"/></svg>',
+    done: '<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>',
+    skipped: '<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>',
+    error: '<svg viewBox="0 0 16 16"><path d="M8 4v5M8 11.5v.5"/></svg>',
+    needs: '<svg viewBox="0 0 16 16"><path d="M8 4v5M8 11.5v.5"/></svg>'
+  };
+  const LABEL = { waiting: 'Waiting', working: 'Working', done: 'Finished', skipped: 'Finished earlier', error: 'Failed', needs: 'Add this file again to continue' };
+
+  function renderCurrent(it) {
+    $('#current').classList.toggle('show', !!it);
+    if (!it) return;
+    $('#curName').textContent = it.path || it.name;
+    $('#curStep').textContent = `${it.step} · ${Math.round(it.progress * 100)}%`;
+    $('#barCur').style.transform = `scaleX(${it.progress})`;
+    const li = document.querySelector(`li[data-key="${CSS.escape(it.key)}"] .fn span`);
+    if (li) li.textContent = it.step;
+    renderTotals(it.progress);
+  }
+
+  function renderTotals(curP = 0) {
+    const all = st.items.length;
+    const fin = st.items.filter(x => x.status === 'done' || x.status === 'skipped');
+    const before = fin.reduce((a, x) => a + (x.before || 0), 0), after = fin.reduce((a, x) => a + (x.after || 0), 0);
+    const workingCount = st.items.some(x => x.status === 'working') ? curP : 0;
+    $('#barAll').style.transform = `scaleX(${all ? (fin.length + st.items.filter(x => x.status === 'error').length + workingCount) / all : 0})`;
+    $('#tBig').textContent = all ? `${fin.length} of ${all} files finished` : 'No files yet';
+    $('#tSub').textContent = !all ? 'Add files to start.'
+      : before ? `${fmt(before)} became ${fmt(after)}, ${Math.round((1 - after / before) * 100)}% smaller` : st.running ? 'Working on the first file.' : 'Press Start when you are ready.';
+  }
+
+  function render() {
+    const ul = $('#files');
+    ul.textContent = '';
+    for (const it of st.items) {
+      const li = document.createElement('li');
+      li.className = it.status;
+      li.dataset.key = it.key;
+      const sub = it.status === 'working' ? it.step : it.status === 'error' ? it.msg : it.msg && it.status === 'done' ? it.msg : LABEL[it.status];
+      const res = (it.status === 'done' || it.status === 'skipped') && it.before && it.after < it.before
+        ? `${fmt(it.before)} → ${fmt(it.after)} <b>−${Math.max(0, Math.round((1 - it.after / it.before) * 100))}%</b>`
+        : it.size ? fmt(it.size) : '';
+      li.innerHTML = `<span class="st" aria-label="${LABEL[it.status]}">${ICON[it.status]}</span><div class="fn"><b></b><span></span></div><div class="res">${res}</div>`;
+      li.querySelector('b').textContent = it.path || it.name;
+      li.querySelector('.fn span').textContent = sub;
+      ul.append(li);
+    }
+    const c = s => st.items.filter(x => x.status === s).length;
+    const waiting = c('waiting'), errors = c('error');
+    $('#empty').hidden = st.items.length > 0;
+    $('#counts').innerHTML = st.items.length ? [['waiting', 'waiting'], ['done', 'finished'], ['skipped', 'finished earlier'], ['error', 'failed'], ['needs', 'need adding again']]
+      .filter(([s]) => c(s)).map(([s, l]) => `<span class="pill">${c(s)} ${l}</span>`).join('') : '';
+    $('#start').disabled = st.running || !waiting;
+    $('#start').textContent = st.running ? 'Working…' : st.items.some(x => x.status === 'done') && waiting ? 'Continue' : 'Start';
+    $('#pause').hidden = !st.running || st.pause;
+    $('#retry').hidden = st.running || !errors;
+    $('#clear').hidden = st.running || !st.items.length;
+    $$('.seg button').forEach(b => { b.setAttribute('aria-pressed', b.dataset.q === st.quality); b.disabled = st.running; });
+    $('#qHelp').textContent = QUALITY[st.quality].help;
+    $('#pickOut').disabled = st.running;
+    $('#pickOut').hidden = !hasFS;
+    const out = $('#outName');
+    out.textContent = st.outDir ? st.outDir.name : 'Downloads (each file right after it is finished)';
+    out.classList.toggle('none', !st.outDir);
+    $('#outHelp').textContent = hasFS ? 'Choose an empty folder. The original files are never changed.' : 'Each file is downloaded as soon as it is finished. The original files are never changed.';
+    renderCurrent(st.items.find(x => x.status === 'working'));
+    renderTotals(st.items.find(x => x.status === 'working')?.progress || 0);
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    $('#toast').textContent = msg;
+    $('#toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 4500);
+  }
+
+  // ---------- Resume after closing or a crash ----------
+  (async () => {
+    st.done = await get('done') || {};
+    st.attempts = await get('attempts') || {};
+    st.quality = await get('quality') || 'high';
+    st.outDir = await get('outDir') || null;
+    st.inDirs = await get('inDirs') || [];
+    const queue = await get('queue') || [];
+    const crashed = await get('current');
+    for (const q of queue) {
+      const it = { ...q };
+      if (st.done[it.key] && it.status !== 'done') Object.assign(it, { status: 'skipped', before: st.done[it.key].before, after: st.done[it.key].after });
+      if (it.key === crashed) {
+        if ((st.attempts[it.key] || 0) >= 2) Object.assign(it, { status: 'error', msg: 'The page stopped twice on this file, so it was skipped' });
+        else it.status = 'waiting';
+      }
+      if (it.status === 'waiting' && !it.handle) it.status = 'needs';
+      st.items.push(it);
+    }
+    if (crashed) await put('current', null);
+    saveQueue();
+    render();
+    const left = st.items.filter(x => x.status === 'waiting' || x.status === 'needs').length;
+    if (!left) return;
+    const needs = st.items.filter(x => x.status === 'needs').length;
+    const doneN = st.items.filter(x => x.status === 'done' || x.status === 'skipped').length;
+    $('#bannerText').textContent = needs
+      ? `Your last batch stopped with ${doneN} finished and ${left} left. Add the same files or folder again to continue; finished files are skipped.`
+      : `Your last batch stopped with ${doneN} finished and ${left} left.${crashed ? ' It was interrupted while working.' : ''}`;
+    $('#bannerBtn').hidden = !!needs;
+    $('#banner').classList.add('show');
+    $('#bannerBtn').onclick = start;
+    // Continue on its own when the browser still allows access to the folders
+    if (!needs) {
+      const ok = (!st.outDir || await st.outDir.queryPermission?.({ mode: 'readwrite' }) === 'granted')
+        && (await Promise.all(st.items.filter(x => x.status === 'waiting').slice(0, 1).map(x => x.handle.queryPermission?.({ mode: 'read' })))).every(p => p === 'granted' || p === undefined);
+      if (ok) {
+        for (let s = 3; s > 0; s--) { $('#bannerText').textContent = `Continuing your last batch in ${s}…`; await sleep(1000); if (st.running) return; }
+        start();
+      }
+    }
+  })();
+})();
+</script>
+</body>
+</html>

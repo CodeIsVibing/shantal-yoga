@@ -36,6 +36,18 @@ Word fajl mora biti **što manji**. Svaka slika se smanjuje tačno na veličinu 
 ## Otvaranje postojećeg .docx
 `openDocx(file)`: dugme „Open Word file“, ⌘O ili prevlačenje .docx na stranu. Fajlovi iz ovog alata se čitaju po stilovima (`Title`, `Heading1`, ostalo vežba). Stariji planovi (kao Febrero) po formatiranju: prvi podebljan red bez podvlačenja je naslov, podebljano i podvučeno je deo, ostali tekst je vežba. Slike idu u poslednju vežbu; slike pre prvog teksta su logo i preskaču se, kao i skrivene slike manje od 2 mm. Neprepoznati formati (EMF, WMF) se preskaču i broje u obaveštenju. Za svaku vežbu bira se Small/Medium/Large koja daje visinu najbližu originalu. Otvaranje zamenjuje trenutni rad, uz „Undo“. Referenca Febrero se otvara sa 28 redova i 40 slika i izvozi u 249 KB (original 12 MB).
 
+## Batch smanjenje (`batch.html`)
+Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici File. Obrađuje .docx i .odt jedan po jedan (`PAUSE_BETWEEN` 400 ms između fajlova), sa ukupnim napretkom, napretkom trenutnog fajla po koracima i listom (Waiting, Working, Finished, Finished earlier, Failed, Add again).
+- Smanjenje: za svaku sliku meri se najveća veličina prikaza u dokumentu (docx: `wp:extent` + `a:srcRect` isecanje, VML `v:shape` style; odt: `draw:frame` `svg:width/height`) i slika se svodi na tu veličinu pri 200 dpi/JPEG 82% (Balanced) ili 300 dpi/JPEG 88% (High quality, podrazumevano). Nepoznata veličina: najduža strana 2400 px. Slike sa providnošću ostaju PNG. Mršavi JPEG koji ne treba smanjivati se ne dira. Nova slika se uzima samo ako je bar 8% manja; slike ispod 30 KB, GIF, EMF/WMF/SVG ostaju iste.
+- Promena ekstenzije (PNG u JPEG) ažurira reference: docx svi `.rels` i `[Content_Types].xml`; odt sve `.xml` reference i `META-INF/manifest.xml`; odt `mimetype` ostaje prvi i nekompresovan.
+- Ako dokument ne postane manji, snima se original (izlazni folder je kompletan).
+- Čuvanje: Chrome/Edge biraju izlazni folder (File System Access, zadržava podfoldere); folder sa originalima se odbija (`isSameEntry` i provera istog imena i veličine). Ostali browseri preuzimaju svaki fajl odmah posle obrade.
+- Nastavak: IndexedDB baza `shantal-batch` čuva `done` (ključ ime|veličina|vreme izmene), `queue`, `attempts`, `current`, folder handle-ove. Posle pada se nastavlja; fajl na kome je stranica pala dva puta se preskače. Bez handle-ova (fajlovi iz običnog izbora) korisnik ponovo dodaje fajlove, a gotovi se preskaču. Ako browser i dalje dozvoljava pristup folderima, nastavlja sam posle odbrojavanja od 3 s. Wake Lock drži ekran budnim tokom rada.
+- Test: Febrero 11,8 MB postaje 661 KB (High quality), test ODT 2,7 MB postaje 260 KB, pokvaren fajl se označi kao greška i rad ide dalje.
+
+## Favicon
+`favicon.png` (128 px) i `favicon.svg` su ruža izdvojena iz loga (najveća povezana celina + detalji unutar nje), tesno isečena, bez pozadine. SVG u tamnoj temi browsera invertuje ružu u svetlu.
+
 ## Interfejs
 - Nazivi: „Section heading“ (deo, interno `deo`), „Exercise“ (vežba, interno `vezba`), „Add photos“, veličina „Small / Medium / Large“, kvalitet „Smaller file“ (150 dpi) / „Print quality“ (300 dpi).
 - Nov dokument ima samo „Document title“; sve ispod korisnik dodaje dugmadima „Section heading“ i „Exercise with photos“ (prazna strana pokazuje kratko uputstvo `.start-hint`).

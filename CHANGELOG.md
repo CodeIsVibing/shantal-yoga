@@ -2,6 +2,16 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.2.0] - 2026-11-01
+
+### Added
+- New page "Shrink documents" (batch.html), linked as "Shrink many files": makes many .docx and .odt files smaller, one at a time.
+- Each photo is resized to the size it is shown at in the document (200 or 300 dpi); transparent photos stay PNG; photos are only replaced when the result is clearly smaller.
+- Progress for the whole batch and for the current file, and a live list of waiting, working, finished and failed files.
+- Each finished file is saved right away: into a chosen folder in Chrome and Edge, or downloaded in other browsers. Folders with the originals are refused, so originals are never overwritten.
+- Finished files are remembered. After a crash or a closed tab the page continues where it stopped, skips finished files, and skips a file that stopped the page twice.
+- Favicon: the rose from the logo, tightly cropped with no background (light in dark browser themes).
+
 ## [1.1.0] - 2026-11-01
 
 ### Changed
