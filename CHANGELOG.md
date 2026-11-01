@@ -2,6 +2,18 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.1.0] - 2026-11-01
+
+### Changed
+- The app is now called "Shantal Yoga Exercise Document" (was "Photos to Word").
+- Everything in the document is centered: logo, title, section headings, exercise names and photo rows, both on the page and in the Word file.
+- A new document starts with only the title; everything below it is added by the user. An empty page shows a short hint.
+- "New document" is now a clear button next to "Open Word file" in a new File card.
+- Exercise controls (photo size, Add photos) float in a small menu above the line, so they never cover the centered name.
+
+### Removed
+- The Shortcuts card. The shortcuts still work.
+
 ## [1.0.0] - 2026-11-01
 
 First public release of Photos to Word for Shantal Yoga session plans.

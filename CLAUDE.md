@@ -1,7 +1,7 @@
-# Shantal Yoga · Photos to Word
+# Shantal Yoga Exercise Document
 
 ## Šta je projekat
-Statična web stranica (`index.html`) za pravljenje Word dokumenta po uzoru na mesečne planove časa „Shantal Yoga“ (referenca: `~/Downloads/2025 02 Febrero_compressed.docx`). Interfejs je na engleskom („Photos to Word“). Raspored u tri kolone: levo Outline (pregled dokumenta, klik skače na red), u sredini A4 strana na kojoj se uređuje direktno, desno panel Document (broj delova/vežbi/slika, kvalitet, ime fajla, procena veličine, **Download Word file**, prečice). Na užim ekranima levi panel nestaje (<1400 px), pa i desni (<1120 px) i tada izvoz ide preko plutajuće trake na dnu.
+Statična web stranica (`index.html`) za pravljenje Word dokumenta po uzoru na mesečne planove časa „Shantal Yoga“ (referenca: `~/Downloads/2025 02 Febrero_compressed.docx`). Interfejs je na engleskom, naziv je „Shantal Yoga Exercise Document“ (ranije „Photos to Word“). Raspored u tri kolone: levo Outline (pregled dokumenta, klik skače na red), u sredini A4 strana na kojoj se uređuje direktno, desno panel Document (broj delova/vežbi/slika, kvalitet, ime fajla, procena veličine, **Download Word file**; kartica File sa dugmadima „New document“ i „Open Word file“). Na užim ekranima levi panel nestaje (<1400 px), pa i desni (<1120 px) i tada izvoz ide preko plutajuće trake na dnu.
 
 Hostuje se na GitHub Pages. Mora da radi i lokalno (`file://`), bez interneta.
 
@@ -17,10 +17,11 @@ Word fajl mora biti **što manji**. Svaka slika se smanjuje tačno na veličinu 
 ## Logo
 - Logo je **uvek isti** i ne može da se menja iz interfejsa. Ugrađen je kao base64 u `LOGO_B64` u `index.html`; izvor je `logo.png`.
 - U referentnom dokumentu logo je JPEG sa crnom pozadinom (providnost izgubljena pri kompresiji), pa se u Word-u vidi crn pravougaonik. `logo.png` je iz njega rekonstruisan kao providan PNG (944×346). Ako se dobije originalni logo, zameniti `logo.png` i `LOGO_B64`.
-- U Word-u: desno poravnat, širina 8 cm, iznad naslova.
+- U Word-u: centriran, širina 8 cm, iznad naslova.
 
 ## Dokument (kao referenca)
 - A4, levo/desno 3 cm, gore/dole 2,5 cm. Font Arial, crna boja.
+- Sve je centrirano (od 2026-11-01, na zahtev korisnika): `w:jc="center"` u stilu `Normal`, pa ga nasleđuju Title, Heading1 i Heading2; redovi slika i logo su takođe centrirani. Pregled prati isto (`text-align:center`, `.row` centriran).
 - Naslov: stil `Title`, 14 pt, podebljano.
 - Deo: stil `Heading1`, 12 pt, podebljano i podvučeno (vidi se u Navigation panelu).
 - Vežba: stil `Heading2`, 12 pt, obično slovo, `keepNext` kada ima slike (naziv ostaje uz slike).
@@ -37,7 +38,9 @@ Word fajl mora biti **što manji**. Svaka slika se smanjuje tačno na veličinu 
 
 ## Interfejs
 - Nazivi: „Section heading“ (deo, interno `deo`), „Exercise“ (vežba, interno `vezba`), „Add photos“, veličina „Small / Medium / Large“, kvalitet „Smaller file“ (150 dpi) / „Print quality“ (300 dpi).
-- Nov dokument počinje sa četiri dela iz reference (`STARTER_SECTIONS`) i praznom vežbom ispod svakog.
+- Nov dokument ima samo „Document title“; sve ispod korisnik dodaje dugmadima „Section heading“ i „Exercise with photos“ (prazna strana pokazuje kratko uputstvo `.start-hint`).
+- Kontrole vežbe (Small/Medium/Large, Add photos) plutaju u malom meniju iznad reda (`.line-tools`), da ne prekrivaju centriran naziv. Na mobilnom stoje ispod naziva.
+- Sekcija „Shortcuts“ je uklonjena (prečice i dalje rade).
 - Slike: dugme „Add photos“, prevlačenje na vežbu ili bilo gde na stranu (nova vežba), lepljenje sa ⌘V.
 - Redosled slika: prevlačenje mišem, ili fokus na sliku pa Alt + strelice. Delete uklanja.
 - Tastatura: Enter dodaje novu vežbu ispod, Backspace u praznom redu ga briše, strelice gore/dole menjaju red, ⌘S čuva.

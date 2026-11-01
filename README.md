@@ -1,4 +1,4 @@
-# Shantal Yoga · Photos to Word
+# Shantal Yoga Exercise Document
 
 A page for building Shantal Yoga session plans as Word documents. You edit directly on a page that looks like the finished document. Photos are resized to the size they take up in the document, so the .docx stays small. Everything runs in the browser and photos never leave your computer.
 

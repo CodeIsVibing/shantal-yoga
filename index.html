@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Photos to Word · Shantal Yoga</title>
+<title>Shantal Yoga Exercise Document</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d1d1f'/%3E%3Cpath d='M10 8h9l5 5v11H10z' fill='%23fff'/%3E%3C/svg%3E">
 <script src="vendor/jszip.min.js"></script>
 <style>
@@ -116,15 +116,20 @@ kbd{font:500 11.5px/1 -apple-system,system-ui,sans-serif;padding:4px 7px;border-
 .sheet input::placeholder{color:#b7b7bc}
 .sheet input:focus::placeholder{color:#d1d1d6}
 
-.logo{display:block;margin-left:auto;width:calc(8cm * var(--k));height:auto;user-select:none;-webkit-user-drag:none}
-.doc-title{font-size:14pt;font-weight:700;margin:calc(.85cm * var(--k)) 0 .85cm}
+.logo{display:block;margin:0 auto;width:calc(8cm * var(--k));height:auto;user-select:none;-webkit-user-drag:none}
+.doc-title{text-align:center;font-size:14pt;font-weight:700;margin:calc(.85cm * var(--k)) 0 .85cm}
 
 .blk{position:relative;margin:0 0 .28cm;border-radius:4px}
 .blk::before{content:"";position:absolute;inset:-4px -10px;border-radius:8px;background:var(--accent-soft);opacity:0;transition:opacity 150ms ease;pointer-events:none}
 .blk:focus-within::before{opacity:.55}
 .blk.deo{margin-top:.15cm}
 .blk.deo .txt{font-weight:700;text-decoration:underline;text-underline-offset:2px}
-.line{display:flex;align-items:center;gap:6px;min-height:1.6em;position:relative}
+.line{display:flex;align-items:center;justify-content:center;min-height:1.6em;position:relative}
+.txt{text-align:center}
+/* Exercise controls float just above the line, so they never cover the centered name */
+.line-tools{position:absolute;right:0;bottom:100%;z-index:2;gap:4px;padding:3px;border-radius:11px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06),0 6px 16px rgba(0,0,0,.12)}
+.line-tools{display:none}
+.blk:hover .line-tools,.blk:focus-within .line-tools{display:flex}
 
 .kind{position:absolute;right:calc(100% + 16px);top:0;height:1.6em;display:flex;align-items:center;gap:4px;
   border:0;background:none;padding:0 7px;border-radius:7px;font:500 11px/1 -apple-system,system-ui,sans-serif;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity 150ms ease,background-color 150ms ease}
@@ -147,8 +152,8 @@ kbd{font:500 11.5px/1 -apple-system,system-ui,sans-serif;padding:4px 7px;border-
 .size button{border:0;border-radius:7px;background:none;height:22px;padding:0 8px;font:500 11.5px/1 -apple-system,system-ui,sans-serif;color:#8e8e93}
 .size button[aria-pressed=true]{background:#fff;color:#1d1d1f;box-shadow:0 1px 2px rgba(0,0,0,.14)}
 
-.rows{display:flex;flex-direction:column;gap:calc(.12cm * var(--k));margin-top:.2cm;position:relative}
-.row{display:flex;gap:calc(.12cm * var(--k))}
+.rows{display:flex;flex-direction:column;align-items:center;gap:calc(.12cm * var(--k));margin-top:.2cm;position:relative}
+.row{display:flex;justify-content:center;gap:calc(.12cm * var(--k))}
 .tile{position:relative;flex:none;background:#f2f2f7;outline:none;cursor:grab}
 .tile img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .tile.dragging{opacity:.35}
@@ -162,7 +167,10 @@ kbd{font:500 11.5px/1 -apple-system,system-ui,sans-serif;padding:4px 7px;border-
 
 .blk.over::before{opacity:1;box-shadow:0 0 0 2px var(--accent)}
 
-.adders{display:flex;gap:8px;margin-top:.8cm;padding-top:.5cm;border-top:1px dashed #e5e5ea}
+.adders{display:flex;justify-content:center;gap:8px;margin-top:.8cm;padding-top:.5cm;border-top:1px dashed #e5e5ea}
+.start-hint{display:none;text-align:center;font:400 13px/1.4 -apple-system,system-ui,sans-serif;color:#8e8e93;margin:.2cm 0 0}
+#blocks:empty ~ .start-hint{display:block}
+#blocks:empty ~ .adders{border-top:0;margin-top:.35cm;padding-top:0}
 .adders button{border:0;background:var(--ctrl);color:#3a3a3c;border-radius:999px;height:34px;padding:0 15px 0 11px;display:flex;align-items:center;gap:6px;font:500 13px/1 -apple-system,system-ui,sans-serif;transition:background-color 150ms ease,transform 120ms ease}
 .adders button:hover{background:var(--ctrl-hover)}
 .adders button small{color:#8e8e93;font-size:11.5px;font-weight:400}
@@ -213,9 +221,11 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
   .kind{right:auto;left:-7px;height:26px;opacity:1}
   .tools{left:auto;right:-6px;top:0;opacity:1}
   .chip,.size{display:flex}
+  .line{flex-wrap:wrap}
+  .line-tools{position:static;transform:none;display:flex;background:none;box-shadow:none;padding:0;justify-content:center;width:100%;margin-top:6px}
   .rm{opacity:1}
 }
-@media (hover:none){ .rm,.tools,.kind{opacity:1} .chip,.size{display:flex} }
+@media (hover:none){ .rm,.tools,.kind{opacity:1} .chip,.size,.line-tools{display:flex} }
 @media (prefers-reduced-motion:reduce){
   *{transition-property:opacity,background-color,color!important}
   .toast{transform:translate(-50%,0)}
@@ -228,7 +238,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 <body>
 
 <aside class="side left" aria-label="Outline">
-  <div class="brand"><img class="js-logo" alt="Shantal Yoga"><span>Photos to Word</span></div>
+  <div class="brand"><img class="js-logo" alt="Shantal Yoga"><span>Exercise Document</span></div>
   <section class="card outline-card">
     <h2>Outline</h2>
     <ul class="outline" id="outline"></ul>
@@ -241,6 +251,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     <img class="logo js-logo" alt="Shantal Yoga">
     <input class="doc-title" id="title" placeholder="Document title" aria-label="Document title" autocomplete="off">
     <div id="blocks"></div>
+    <p class="start-hint">Everything below the title is added by you. Start with a section heading or an exercise.</p>
     <div class="adders">
       <button type="button" data-add="deo" title="Bold, underlined heading that starts a new part of the session"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Section heading</button>
       <button type="button" data-add="vezba" title="Exercise name with a row of photos"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Exercise with photos</button>
@@ -272,24 +283,13 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
   </section>
 
   <section class="card">
-    <h2>Shortcuts</h2>
-    <ul class="keys">
-      <li>Add a new line <kbd>Enter</kbd></li>
-      <li>Delete an empty line <kbd>⌫</kbd></li>
-      <li>Paste photos <kbd>⌘ V</kbd></li>
-      <li>Reorder photos <kbd>Drag</kbd></li>
-      <li>Download <kbd>⌘ S</kbd></li>
-      <li>Open a Word file <kbd>⌘ O</kbd></li>
-    </ul>
+    <h2>File</h2>
+    <p class="help" style="margin:0 0 12px">Start a blank plan, or open a Word file (.docx) to keep editing it. You can also drop a .docx onto the page.</p>
+    <div style="display:grid;gap:8px">
+      <button type="button" class="btn ghost block js-new"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>New document</button>
+      <button type="button" class="btn ghost block js-open"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Open Word file</button>
+    </div>
   </section>
-
-  <section class="card">
-    <h2>Edit an existing file</h2>
-    <p class="help" style="margin:0 0 12px">Open a Word file (.docx) made here or an older session plan, change it, then download it again. You can also drop the file onto the page.</p>
-    <button type="button" class="btn ghost block js-open"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Open Word file</button>
-  </section>
-
-  <button type="button" class="btn plain block js-new">Start a new document</button>
 </aside>
 
 <div class="bar" role="toolbar" aria-label="Download">
@@ -553,10 +553,13 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     t.addEventListener('keydown', e => onKey(e, b, t));
     line.append(t);
     if (!isDeo) {
-      if (b.images.length) line.append(sizeEl(b));
+      const lt = document.createElement('div');
+      lt.className = 'line-tools';
+      if (b.images.length) lt.append(sizeEl(b));
       const chip = button('chip', '', 'Add photos to this exercise', () => pick(b));
       chip.innerHTML = (b.images.length ? icon.plus + 'More photos' : icon.img + 'Add photos');
-      line.append(chip);
+      lt.append(chip);
+      line.append(lt);
     }
 
     const tools = document.createElement('div');
@@ -735,7 +738,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
       e.preventDefault();
       const v = insertVezbaAfter(i);
       render({ id: v.id });
-    } else if (e.key === 'Backspace' && !t.value && !b.images.length && state.blocks.length > 1) {
+    } else if (e.key === 'Backspace' && !t.value && !b.images.length) {
       e.preventDefault();
       state.blocks.splice(i, 1);
       render({ id: i > 0 ? state.blocks[i - 1].id : 'title', end: true });
@@ -855,9 +858,8 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
       return state.blocks.length > 0 || !!state.title;
     } catch (e) { return false; }
   }
-  // A new document starts with the four parts every monthly session uses
-  const STARTER_SECTIONS = ['TOMA DE CONTACTO', 'PARTE DINÁMICA', 'ĀSANAS', 'PRĀNĀYAMA, MEDITACIÓN, RELAJACIÓN'];
-  const starter = () => STARTER_SECTIONS.flatMap(s => [newBlock('deo', s), newBlock('vezba')]);
+  // A new document has only the title; everything below it is added by the user
+  const starter = () => [];
 
   // ---------- Compression ----------
   async function compress(file, wPx, q) {
@@ -897,7 +899,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     zip.file('word/media/logo.png', LOGO_B64, { base64: true });
 
     const logoCx = Math.round(LOGO_CM * EMU), logoCy = Math.round(LOGO_CM * LOGO_H / LOGO_W * EMU);
-    let body = `<w:p><w:pPr><w:spacing w:after="480" w:line="240" w:lineRule="auto"/><w:jc w:val="right"/></w:pPr>${drawing('rIdLogo', 1, logoCx, logoCy, 'Logo')}</w:p>`;
+    let body = `<w:p><w:pPr><w:spacing w:after="480" w:line="240" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>${drawing('rIdLogo', 1, logoCx, logoCy, 'Logo')}</w:p>`;
     const title = state.title.trim();
     if (title) body += para('Title', title);
 
@@ -931,7 +933,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 
     const run = (extra = '') => `<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:color w:val="000000"/>${extra}</w:rPr>`;
     const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault>${run('<w:sz w:val="24"/><w:szCs w:val="24"/>')}</w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>`
-      + `<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>`
+      + `<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:pPr><w:jc w:val="center"/></w:pPr></w:style>`
       + `<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="480"/></w:pPr>${run('<w:b/><w:bCs/><w:sz w:val="28"/><w:szCs w:val="28"/>')}</w:style>`
       + `<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Heading2"/><w:qFormat/><w:pPr><w:keepNext/><w:outlineLvl w:val="0"/></w:pPr>${run('<w:b/><w:bCs/><w:u w:val="single"/>')}</w:style>`
       + `<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Heading2"/><w:qFormat/><w:pPr><w:outlineLvl w:val="1"/></w:pPr>${run()}</w:style>`
