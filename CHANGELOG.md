@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.8.0] - 2026-11-03
+
+### Added
+- shantal-yoga-ejercicios.xlsx: every exercise from the plans, one sheet per year and one column per month, in plan order and colored by section, with the logo and a total per month. Built with tools/yearly_xlsx.py.
+
 ## [1.7.0] - 2026-11-03
 
 ### Changed

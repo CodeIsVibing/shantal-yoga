@@ -88,3 +88,7 @@ Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici 
 ## Moguća sledeća poboljšanja (raditi samo na zahtev)
 - Ručni prelom strane pre izabranog dela.
 - Opis ispod vežbe.
+
+## Excel po godinama
+
+`shantal-yoga-ejercicios.xlsx` (objavljen): tab po godini, kolona po mesecu, vežbe redom iz plana, obojene po sekciji, logo pored naslova, zamrznuta samo prva dva reda. Pravi ga `tools/yearly_xlsx.py` (koristi nazive šablona iz `build.py`); posle novih planova pokrenuti ponovo i objaviti.
