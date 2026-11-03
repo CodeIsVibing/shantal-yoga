@@ -47,6 +47,17 @@ Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici 
 - Nastavak: IndexedDB baza `shantal-batch` čuva `done` (ključ ime|veličina|vreme izmene), `queue`, `attempts`, `current`, folder handle-ove. Posle pada se nastavlja; fajl na kome je stranica pala dva puta se preskače. Bez handle-ova (fajlovi iz običnog izbora) korisnik ponovo dodaje fajlove, a gotovi se preskaču. Ako browser i dalje dozvoljava pristup folderima, nastavlja sam posle odbrojavanja od 3 s. Wake Lock drži ekran budnim tokom rada.
 - Test: Febrero 11,8 MB postaje 661 KB (High quality); test ODT sa zaglavljem, listama, tabelom i SVG-om (2,7 MB) postaje .docx od 232 KB; pokvaren fajl se označi kao greška i rad ide dalje.
 
+## Šabloni vežbi (`templates.html`, `templates-store.js`)
+- Izvor: 101 plan u `New Yoga Files/` (privatno, u `.gitignore`). `tools/build.py` (koristi `tools/extract.py`) pravi `templates-pack/shantal-templates.zip` (takođe u `.gitignore`): `templates.json` + `img/<sha1>.<ext>`. Pokretanje: `python3 tools/build.py "New Yoga Files" templates-pack/shantal-templates.zip`.
+- Pravila izvlačenja: sekcije se prepoznaju po nazivu (TOMA DE CONTACTO, PARTE/FASE DINÁMICA, ĀSANAS, PRĀNĀYAMA…, RELAJACIÓN, ESTUDIO; sa ili bez broja ispred), samo ako je red velikim slovima ili podebljan; „PARTE DINÁMICA: PAVANAS CUELLO“ daje sekciju i vežbu. ESTUDIO se preskače, kao i redovi duži od 160 znakova. Ključ vežbe: bez akcenata, interpunkcije i broja ispred; nazivi pisani velikim slovima (ili sa ASANA) grupišu se po delu pre „(“ ili „:“. Prikazni naziv je najčešća varijanta. Slike i veličina iz poslednjeg plana u kome vežba ima slike. Logo se izbacuje (`looks_like_logo`, poređenje sa `logo.png`).
+- Rezultat: 350 šablona (249 se ponavlja, 101 jednom), 305 slika, paket 5,1 MB.
+- Čuvanje: IndexedDB `shantal-templates`, store `tpl` (id, name, section, size, images[{blob,w,h}], uses, lastUsed, updated). Import spaja po id-u; Export pravi isti .zip format. Promene se javljaju otvorenim stranicama preko `BroadcastChannel('shantal-templates')`.
+- Na sajtu (http/https), ako je baza prazna, stranica pokušava da učita `shantal-templates.zip` iz korena sajta. Taj fajl NIJE objavljen (sadrži fotografije iz planova); objavljuje se samo uz izričitu potvrdu korisnika.
+- Glavna stranica: kartica „Templates“ sa `<select>` grupisanim po sekcijama (levo; između 1120 i 1400 px desno; ispod 1120 px u traci na dnu). Izbor ubacuje vežbu na kraj njene sekcije (`insertTemplate`); ako sekcija ne postoji, prvo dodaje naslov sekcije. „Undo“ vraća.
+
+## PDF
+„Save as PDF“ (⌘P) pravi `#printRoot` sa stranama `.pp` (A4, tačno 29,7 cm, `overflow:hidden`) po istom modelu kao Word (`computeLayout`, isti prelomi i smanjene slike), slike se kompresuju po izabranom kvalitetu, pa `window.print()`. `@page{margin:0}` uklanja zaglavlja browsera; margine su padding strane. Ime PDF-a = naslov dokumenta. Test: 3 strane modela daju PDF od 3 strane, 207 KB.
+
 ## Favicon
 `favicon.png` (128 px) i `favicon.svg` su ruža izdvojena iz loga (najveća povezana celina + detalji unutar nje), tesno isečena, bez pozadine. SVG u tamnoj temi browsera invertuje ružu u svetlu.
 
@@ -61,7 +72,7 @@ Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici 
 - Brisanje nema potvrdu; umesto toga obaveštenje sa dugmetom „Undo“.
 
 ## Pravila za kod
-- Ostati na jednom statičnom HTML fajlu (plus `vendor/`) osim ako korisnik ne traži drugačije.
+- Statične stranice bez build koraka: `index.html`, `batch.html`, `templates.html`, deljeni `templates-store.js`, `vendor/`.
 - Sav tekst u interfejsu na engleskom, jasne i opisne reči. Bez crtice „—“. Komentari u kodu na engleskom.
 - Svetla i tamna tema za okruženje; list papira je uvek beo.
 - Vidljiv fokus za tastaturu, responsivnost do mobilnog, `prefers-reduced-motion`.

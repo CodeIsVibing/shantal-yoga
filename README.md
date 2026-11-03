@@ -12,6 +12,16 @@ Your work is saved in the browser automatically. "Start a new document" clears t
 
 To change an existing file, click **Open Word file** (or press ⌘O, or drop the .docx onto the page). It works with files made here and with older session plans. Gray bands on the page show where Word will start a new page. They are approximate.
 
+## Exercise templates
+Open **Manage templates** (or `templates.html`) to see every exercise from the past plans: 350 templates, 249 of them used more than once. Search, filter by section or by how often an exercise was used, edit a template (name, section, photo size, photos and their order), delete it (with Undo) or make a new one.
+
+Templates live in this browser. To bring them in, click **Import** and choose `shantal-templates.zip`; **Export** saves the current templates as the same kind of file for another browser.
+
+On the Exercise Document page, choose an exercise in the **Templates** menu on the left and it is added to the end of its section; a missing section heading is added first.
+
+## Save as PDF
+**Save as PDF** (or ⌘P) lays the pages out exactly like the Word file, with the same page breaks, and opens the print window. Choose "Save as PDF" there. Photos are resized first, so the PDF stays small.
+
 ## Shrink many files
 Open **Shrink many files** (or `batch.html`) to make a whole set of Word (.docx) and OpenDocument (.odt) files smaller.
 

@@ -2,6 +2,14 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.4.0] - 2026-11-03
+
+### Added
+- Exercise templates page (templates.html): browse, search and filter every exercise from the past plans, edit name, section, photo size and photos (drag to reorder, drop or paste to add), delete with Undo, create new templates, import and export a templates file.
+- Templates menu on the Exercise Document page: choosing an exercise adds it, with its photos and size, to the end of its section; a missing section heading is added first.
+- Save as PDF (button and Cmd+P): pages laid out like the Word file, with the same page breaks, through the browser's "Save as PDF".
+- tools/build.py and tools/extract.py build the templates file from a folder of plans.
+
 ## [1.3.0] - 2026-11-01
 
 ### Changed

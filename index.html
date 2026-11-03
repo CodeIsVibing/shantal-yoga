@@ -7,6 +7,7 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script src="vendor/jszip.min.js"></script>
+<script src="templates-store.js"></script>
 <style>
 :root{
   --canvas:#f2f2f4; --panel:#fff; --panel-line:rgba(0,0,0,.06);
@@ -203,10 +204,37 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 .toast button:hover{background:rgba(255,255,255,.22)}
 .toast button[hidden]{display:none}
 
+/* ---------- Templates picker ---------- */
+.tpl-select{width:100%;height:38px;border-radius:10px;border:0;background:var(--ctrl);color:var(--ink);padding:0 10px;font-size:13.5px}
+.tpl-manage{display:inline-flex;margin-top:8px;font-size:12.5px;font-weight:500;color:var(--accent);text-decoration:none}
+.tpl-manage:hover{text-decoration:underline}
+.tpl-card .help{margin-top:8px}
+.tpl-right{display:none}
+.bar .tpl-select{flex:1 1 100%}
+
+/* ---------- PDF: printed pages built from the same page model as the Word file ---------- */
+#printRoot{display:none}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff!important}
+  body{display:block}
+  body>*:not(#printRoot){display:none!important}
+  #printRoot{display:block}
+}
+.pp{width:21cm;height:29.7cm;overflow:hidden;padding:2.5cm 3cm;box-sizing:border-box;break-after:page;page-break-after:always;font:12pt Arial,Helvetica,sans-serif;color:#000;text-align:center;background:#fff}
+.pp:last-child{break-after:auto;page-break-after:auto}
+.pp .pl{display:block;width:8cm;height:auto;margin:0 auto .937cm}
+.pp p{margin:0 0 .282cm;line-height:.525cm}
+.pp .pt{font-size:14pt;font-weight:700;line-height:.613cm;margin-bottom:.847cm}
+.pp .pd{font-weight:700;text-decoration:underline}
+.pp .pr{display:flex;justify-content:center;gap:.12cm}
+.pp .pr img{display:block}
+
 /* ---------- Responsive ---------- */
 @media (max-width:1400px){
   body{grid-template-columns:minmax(0,1fr) 300px}
   .side.left{display:none}
+  .tpl-right{display:block}
 }
 @media (max-width:1120px){
   body{grid-template-columns:minmax(0,1fr)}
@@ -241,6 +269,12 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 
 <aside class="side left" aria-label="Outline">
   <div class="brand"><img class="js-logo" alt="Shantal Yoga"><span>Exercise Document</span></div>
+  <section class="card tpl-card">
+    <h2>Templates</h2>
+    <select class="tpl-select js-tpl" aria-label="Add an exercise from a template"></select>
+    <p class="help tpl-help">Choose an exercise and it appears in its section of the document.</p>
+    <a class="tpl-manage" href="templates.html">Manage templates</a>
+  </section>
   <section class="card outline-card">
     <h2>Outline</h2>
     <ul class="outline" id="outline"></ul>
@@ -262,6 +296,12 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 </div>
 
 <aside class="side right" aria-label="Download">
+  <section class="card tpl-card tpl-right">
+    <h2>Templates</h2>
+    <select class="tpl-select js-tpl" aria-label="Add an exercise from a template"></select>
+    <p class="help tpl-help">Choose an exercise and it appears in its section of the document.</p>
+    <a class="tpl-manage" href="templates.html">Manage templates</a>
+  </section>
   <section class="card">
     <h2>Document</h2>
     <div class="stats">
@@ -281,6 +321,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     <div class="kv"><span>Pages</span><b id="nPages" title="Approximate. Page breaks are shown on the page.">1</b></div>
     <div class="kv" style="margin-bottom:14px"><span>Estimated size</span><b id="estSize">0 KB</b></div>
     <button type="button" class="btn primary big block js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Download Word file</span></button>
+    <button type="button" class="btn ghost block js-pdf" style="margin-top:8px"><svg viewBox="0 0 16 16"><path d="M4 6V2.5h8V6M4 12H2.5V7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v5H12M4.5 9.5h7v4h-7z"/></svg><span>Save as PDF</span></button>
     <p class="saved"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Your work is saved in this browser</p>
   </section>
 
@@ -296,10 +337,12 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
 </aside>
 
 <div class="bar" role="toolbar" aria-label="Download">
+  <select class="tpl-select js-tpl bar-tpl" aria-label="Add an exercise from a template"></select>
   <div class="seg" role="group" aria-label="Photo quality">
     <button type="button" data-q="screen">Smaller file</button>
     <button type="button" data-q="print">Print quality</button>
   </div>
+  <button type="button" class="btn ghost js-pdf"><span>PDF</span></button>
   <button type="button" class="btn ghost js-open">Open</button>
   <button type="button" class="btn ghost js-new">New</button>
   <button type="button" class="btn primary js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Download Word file</span></button>
@@ -974,6 +1017,125 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
   }
 
 
+  // ---------- Templates ----------
+  let templates = [];
+  async function loadTemplates() {
+    try { templates = await TemplateStore.all(); } catch (e) { templates = []; }
+    const groups = new Map();
+    for (const t of templates) { const k = t.section || 'Other'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
+    $$('.js-tpl').forEach(sel => {
+      sel.textContent = '';
+      sel.append(new Option(templates.length ? `Add an exercise from ${templates.length} templates…` : 'No templates yet', ''));
+      for (const [sec, ts] of groups) {
+        const og = document.createElement('optgroup');
+        og.label = sec;
+        ts.forEach(t => og.append(new Option(t.name + (t.images.length ? `  ·  ${t.images.length} ${t.images.length === 1 ? 'photo' : 'photos'}` : ''), t.id)));
+        sel.append(og);
+      }
+      sel.value = '';
+    });
+    $$('.tpl-help').forEach(p => { p.textContent = templates.length ? 'Choose an exercise and it appears in its section of the document.' : 'Import the templates file on the Templates page first.'; });
+  }
+
+  // A template goes to the end of its section; a missing section heading is added first
+  function insertTemplate(t) {
+    const before = snapshot();
+    const v = newBlock('vezba', t.name);
+    v.size = t.size || 'm';
+    v.images = t.images.map(im => {
+      const type = im.blob.type || 'image/jpeg';
+      const file = new File([im.blob], 'photo.' + (type.split('/')[1] || 'jpg'), { type });
+      return { id: ++uid, file, w: im.w, h: im.h, url: URL.createObjectURL(file) };
+    });
+    const key = TemplateStore.plain(t.section);
+    const i = key ? state.blocks.findIndex(b => b.type === 'deo' && TemplateStore.plain(b.text) === key) : -1;
+    if (i >= 0) {
+      let j = i + 1;
+      while (j < state.blocks.length && state.blocks[j].type !== 'deo') j++;
+      state.blocks.splice(j, 0, v);
+    } else {
+      if (t.section) state.blocks.push(newBlock('deo', t.section));
+      state.blocks.push(v);
+    }
+    lastBlockId = v.id;
+    render();
+    blocksEl.querySelector(`[data-id="${v.id}"]`)?.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    toast(`Added “${t.name}”.`, () => { state.blocks = before; render(); });
+  }
+  $$('.js-tpl').forEach(sel => sel.addEventListener('change', () => {
+    const t = templates.find(x => x.id === sel.value);
+    sel.value = '';
+    if (t) insertTemplate(t);
+  }));
+  TemplateStore.onChange(loadTemplates);
+  loadTemplates();
+
+  // ---------- PDF: the browser's "Save as PDF", from pages laid out like the Word file ----------
+  const pdfPhotos = new Map();
+  async function savePdf() {
+    if (busy) return;
+    busy = true;
+    const btns = [...$$('.js-pdf')];
+    const label = text => btns.forEach(b => { b.disabled = true; b.querySelector('span').textContent = text; });
+    $('#printRoot')?.remove();
+    try {
+      layout = computeLayout();
+      const { dpi, q } = QUALITY[state.quality];
+      const breaks = new Set(layout.breaks.filter(([a]) => a).map(([a]) => a.id + ':' + (a.row ?? -1)));
+      const root = document.createElement('div');
+      root.id = 'printRoot';
+      let page;
+      const newPage = () => { page = document.createElement('div'); page.className = 'pp'; root.append(page); };
+      const breakAt = key => { if (breaks.has(key)) newPage(); };
+      const para = (cls, text) => { const el = document.createElement('p'); el.className = cls; el.textContent = text; page.append(el); };
+      newPage();
+      const logo = new Image();
+      logo.className = 'pl'; logo.alt = ''; logo.src = 'data:image/png;base64,' + LOGO_B64;
+      page.append(logo);
+      if (state.title.trim()) { breakAt('title:-1'); para('pt', state.title.trim()); }
+      const total = state.blocks.reduce((a, b) => a + b.images.length, 0);
+      let n = 0;
+      for (const b of state.blocks) {
+        const text = b.text.trim();
+        if (b.type === 'deo') { if (text) { breakAt(b.id + ':-1'); para('pd', text); } continue; }
+        if (text) { breakAt(b.id + ':-1'); para('', text); }
+        const rows = layout.rows.get(b.id) || [];
+        for (const [ri, r] of rows.entries()) {
+          breakAt(b.id + ':' + (ri === 0 && !text ? -1 : ri));
+          const row = document.createElement('div');
+          row.className = 'pr';
+          row.style.marginBottom = ((ri < rows.length - 1 ? GAP_CM : AFTER) + DESCENT) + 'cm';
+          for (const img of r.images) {
+            label(`Preparing photo ${++n} of ${total}`);
+            const wCm = r.h * img.w / img.h, wPx = Math.ceil(wCm / 2.54 * dpi);
+            const key = `${img.id}:${wPx}:${q}`;
+            let u = pdfPhotos.get(key);
+            if (!u) { u = URL.createObjectURL(new Blob([await compress(img.file, wPx, q)], { type: 'image/jpeg' })); pdfPhotos.set(key, u); }
+            const el = new Image();
+            el.alt = ''; el.src = u;
+            el.style.width = wCm + 'cm'; el.style.height = r.h + 'cm';
+            row.append(el);
+          }
+          page.append(row);
+        }
+      }
+      label('Opening print window');
+      document.body.append(root);
+      await Promise.all([...root.querySelectorAll('img')].map(i => i.decode().catch(() => {})));
+      const docTitle = document.title;
+      document.title = fileName();                 // becomes the suggested PDF file name
+      window.addEventListener('afterprint', () => { document.title = docTitle; root.remove(); }, { once: true });
+      toast('In the print window, choose “Save as PDF”.');
+      window.print();
+    } catch (e) {
+      toast('PDF failed: ' + e.message);
+    } finally {
+      busy = false;
+      btns.forEach(b => { b.disabled = false; b.querySelector('span').textContent = b.closest('.bar') ? 'PDF' : 'Save as PDF'; });
+    }
+  }
+  $$('.js-pdf').forEach(b => b.addEventListener('click', savePdf));
+
   // ---------- Opening an existing .docx ----------
   const NS = {
     w: 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
@@ -1110,6 +1272,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
   }));
   document.addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); save(); }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'p') { e.preventDefault(); savePdf(); }
     if ((e.metaKey || e.ctrlKey) && e.key === 'o') { e.preventDefault(); pickDoc(); }
   });
 

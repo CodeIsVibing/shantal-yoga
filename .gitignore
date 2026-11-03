@@ -2,3 +2,7 @@
 Thumbs.db
 *.docx
 node_modules/
+
+# Private plans and the templates pack with their photos: never publish without asking
+New Yoga Files/
+templates-pack/

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exercise Templates · Shantal Yoga</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="vendor/jszip.min.js"></script>
+<script src="templates-store.js"></script>
+<style>
+:root{
+  --canvas:#f2f2f4; --panel:#fff; --panel-line:rgba(0,0,0,.06);
+  --ink:#1d1d1f; --ink-2:#3a3a3c; --muted:#6e6e73; --faint:#aeaeb2;
+  --accent:#0071e3; --accent-press:#0062c4; --accent-ink:#fff; --accent-soft:rgba(0,113,227,.1);
+  --danger:#d70015; --ok:#248a3d;
+  --ctrl:rgba(0,0,0,.05); --ctrl-hover:rgba(0,0,0,.08); --seg-on:#fff; --thumb:#f2f2f7;
+  --ease:cubic-bezier(.23,1,.32,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --canvas:#1c1c1e; --panel:#2c2c2e; --panel-line:rgba(255,255,255,.06);
+    --ink:#f5f5f7; --ink-2:#d1d1d6; --muted:#98989d; --faint:#636366;
+    --accent:#0a84ff; --accent-press:#0070e0; --accent-soft:rgba(10,132,255,.18); --danger:#ff453a; --ok:#30d158;
+    --ctrl:rgba(255,255,255,.08); --ctrl-hover:rgba(255,255,255,.13); --seg-on:#636366; --thumb:#3a3a3c;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--canvas);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.brand img{width:150px;height:auto;display:block;margin-bottom:10px}
+@media (prefers-color-scheme:dark){ .brand img{filter:invert(1)} }
+h1{margin:0;font-size:28px;line-height:1.1;letter-spacing:-.02em;font-weight:700}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14.5px;max-width:620px}
+.back{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;background:var(--ctrl);color:var(--ink);text-decoration:none;font-weight:500;font-size:13px;white-space:nowrap;transition:background-color 150ms ease}
+.back:hover{background:var(--ctrl-hover)}
+
+.card{background:var(--panel);border-radius:16px;box-shadow:0 0 0 1px var(--panel-line),0 1px 2px rgba(0,0,0,.03);padding:16px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;top:10px;z-index:5;margin-bottom:18px;backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);background:color-mix(in srgb,var(--panel) 86%,transparent)}
+.search{flex:1 1 240px;display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:10px;background:var(--ctrl)}
+.search input{flex:1;min-width:0;border:0;background:none;outline:none;height:100%}
+.search svg{color:var(--muted)}
+select.sel{height:36px;border-radius:10px;border:0;background:var(--ctrl);padding:0 10px;max-width:260px}
+.seg{display:flex;padding:2px;border-radius:10px;background:var(--ctrl)}
+.seg button{border:0;background:none;border-radius:8px;height:32px;padding:0 11px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;transition:color 150ms ease,background-color 150ms ease}
+.seg button[aria-pressed=true]{background:var(--seg-on);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.btn{border:0;height:36px;border-radius:11px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:600;white-space:nowrap;transition:background-color 150ms ease,transform 120ms ease,opacity 150ms ease}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.ghost{background:var(--ctrl);color:var(--ink)}
+.btn.ghost:hover:not(:disabled){background:var(--ctrl-hover)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover:not(:disabled){background:var(--accent-press)}
+.btn.danger{background:none;color:var(--danger)}
+.btn.danger:hover{background:var(--ctrl)}
+.spacer{flex:1}
+
+.group{margin-bottom:26px}
+.group h2{margin:0 0 10px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.group h2 span{font-weight:500;letter-spacing:0;text-transform:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tpl{display:flex;flex-direction:column;text-align:left;border:0;padding:0;background:var(--panel);border-radius:14px;box-shadow:0 0 0 1px var(--panel-line),0 1px 2px rgba(0,0,0,.03);overflow:hidden;transition:transform 160ms var(--ease),box-shadow 160ms ease}
+@media (hover:hover) and (pointer:fine){ .tpl:hover{box-shadow:0 0 0 1px var(--panel-line),0 8px 24px rgba(0,0,0,.08)} }
+.tpl:active{transform:scale(.98)}
+.thumbs{height:104px;display:flex;gap:2px;background:var(--thumb);overflow:hidden;position:relative}
+.thumbs img{height:100%;flex:1 1 0;min-width:0;object-fit:cover;background:#fff}
+.thumbs .none{margin:auto;color:var(--faint);font-size:12px;display:flex;align-items:center;gap:6px}
+.thumbs .more{position:absolute;right:6px;bottom:6px;font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:999px;backdrop-filter:blur(8px)}
+.tpl .body{padding:10px 12px 12px}
+.tpl b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:600;font-size:13.5px;line-height:1.3}
+.tpl small{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+.badge{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-right:4px}
+.badge.once{background:var(--ctrl);color:var(--muted)}
+
+.empty{text-align:center;padding:48px 20px}
+.empty p{color:var(--muted);margin:6px 0 18px}
+.drop{border:1.5px dashed var(--faint);border-radius:14px;transition:border-color 150ms ease,background-color 150ms ease}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.noresult{color:var(--muted);text-align:center;padding:40px 0}
+
+/* Edit dialog */
+dialog{border:0;padding:0;border-radius:18px;background:var(--panel);color:var(--ink);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 40px);box-shadow:0 30px 80px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+dialog[open]{animation:pop 200ms var(--ease)}
+@keyframes pop{from{opacity:0;transform:scale(.97)}}
+.dlg{display:flex;flex-direction:column;max-height:calc(100vh - 40px)}
+.dlg header{display:block;margin:0;padding:18px 20px 0}
+.dlg h3{margin:0;font-size:18px}
+.dlg .content{padding:16px 20px;overflow:auto;display:grid;gap:16px}
+.dlg footer{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--panel-line)}
+.f label,.f .lbl{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.f input[type=text]{width:100%;height:38px;border-radius:10px;border:0;background:var(--ctrl);padding:0 12px;outline:none}
+.f input[type=text]:focus{box-shadow:0 0 0 2px var(--accent)}
+.photos{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:12px;background:var(--ctrl);min-height:96px}
+.photos.over{box-shadow:0 0 0 2px var(--accent)}
+.ph{position:relative;height:96px;border-radius:8px;overflow:hidden;background:#fff;cursor:grab;flex:none}
+.ph img{height:100%;display:block;pointer-events:none}
+.ph.dragging{opacity:.35}
+.ph.drop-before{box-shadow:-3px 0 0 var(--accent)}
+.ph button{position:absolute;top:5px;right:5px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center}
+.ph button svg{width:11px;height:11px;stroke-width:2.4}
+.addph{height:96px;width:96px;border:1.5px dashed var(--faint);border-radius:8px;background:none;color:var(--muted);display:grid;place-items:center;font-size:12px;font-weight:500;flex:none}
+.addph:hover{border-color:var(--accent);color:var(--accent)}
+.help{font-size:12px;color:var(--muted);margin:6px 0 0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:20;transform:translate(-50%,8px);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:14px;background:rgba(29,29,31,.92);color:#fff;font-size:14px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,.25);transition:opacity 200ms var(--ease),transform 200ms var(--ease);max-width:calc(100vw - 24px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:9px;height:30px;padding:0 12px;font-weight:600;font-size:13px}
+
+@media (max-width:760px){ header{flex-direction:column;align-items:flex-start} .tools{position:static} }
+@media (prefers-reduced-motion:reduce){ *{transition-property:opacity,background-color,color!important} dialog[open]{animation:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="logo.png" alt="Shantal Yoga">
+      <h1>Exercise templates</h1>
+      <p class="lead" id="lead">Every exercise from the past plans, ready to add to a new document from the Exercise Document page.</p>
+    </div>
+    <a class="back" href="index.html"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Exercise Document</a>
+  </header>
+
+  <div class="card tools" id="tools">
+    <label class="search"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg><input type="search" id="q" placeholder="Search templates" aria-label="Search templates"></label>
+    <select class="sel" id="sec" aria-label="Section"><option value="">All sections</option></select>
+    <div class="seg" role="group" aria-label="How often used">
+      <button type="button" data-use="all" aria-pressed="true">All</button>
+      <button type="button" data-use="rep" aria-pressed="false">Used more than once</button>
+      <button type="button" data-use="once" aria-pressed="false">Used once</button>
+    </div>
+    <span class="spacer"></span>
+    <button type="button" class="btn ghost" id="importBtn"><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>Import</button>
+    <button type="button" class="btn ghost" id="exportBtn"><svg viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 6 8 2.5 11.5 6M3 13.5h10"/></svg>Export</button>
+    <button type="button" class="btn primary" id="newBtn"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>New template</button>
+  </div>
+
+  <section class="card empty drop" id="empty" hidden>
+    <h2 style="margin:0;font-size:18px">No templates yet</h2>
+    <p>Import the templates file (shantal-templates.zip), or drop it here. You can also make templates one by one.</p>
+    <button type="button" class="btn primary" id="emptyImport">Import templates</button>
+  </section>
+
+  <div id="list"></div>
+  <p class="noresult" id="noresult" hidden>No templates match your search.</p>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form method="dialog" class="dlg" id="form">
+    <header><h3 id="dlgTitle">Edit template</h3></header>
+    <div class="content">
+      <div class="f"><label for="fName">Exercise name</label><input type="text" id="fName" required autocomplete="off"></div>
+      <div class="f"><label for="fSec">Section</label><input type="text" id="fSec" list="secList" autocomplete="off"><datalist id="secList"></datalist>
+        <p class="help">When you add this template to a document, it goes into this section.</p></div>
+      <div class="f"><span class="lbl">Photo size</span>
+        <div class="seg" role="group" aria-label="Photo size" id="fSize" style="display:inline-flex">
+          <button type="button" data-s="s">Small</button><button type="button" data-s="m">Medium</button><button type="button" data-s="l">Large</button>
+        </div></div>
+      <div class="f"><span class="lbl">Photos</span>
+        <div class="photos" id="fPhotos"></div>
+        <p class="help">Drag to change the order. Drop or paste photos here to add them.</p></div>
+    </div>
+    <footer>
+      <button type="button" class="btn danger" id="delBtn">Delete template</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn primary" id="saveBtn">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>Undo</button></div>
+<input type="file" id="packPicker" accept=".zip,application/zip" hidden>
+<input type="file" id="photoPicker" accept="image/*" multiple hidden>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => document.querySelectorAll(s);
+  const TS = TemplateStore;
+  let list = [], urls = [], filter = { q: '', sec: '', use: 'all' };
+
+  const icon = {
+    x: '<svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+    img: '<svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2"/><circle cx="6" cy="6.5" r="1.2"/><path d="M14 10.5l-3.5-3.5L4 13"/></svg>'
+  };
+  const url = blob => { const u = URL.createObjectURL(blob); urls.push(u); return u; };
+
+  // ---------- List ----------
+  async function load() {
+    list = await TS.all();
+    const sections = [...new Set([...TS.SECTIONS, ...list.map(t => t.section).filter(Boolean)])];
+    const sel = $('#sec'), cur = sel.value;
+    sel.innerHTML = '<option value="">All sections</option>' + sections.map(s => `<option></option>`).join('');
+    sections.forEach((s, i) => { sel.options[i + 1].value = s; sel.options[i + 1].textContent = s; });
+    sel.value = sections.includes(cur) ? cur : '';
+    $('#secList').innerHTML = '';
+    sections.forEach(s => { const o = document.createElement('option'); o.value = s; $('#secList').append(o); });
+    const rep = list.filter(t => t.uses > 1).length;
+    $('#lead').textContent = list.length
+      ? `${list.length} templates from the past plans, ${rep} of them used more than once. Choose one on the Exercise Document page and it lands in its section.`
+      : 'Every exercise from the past plans, ready to add to a new document from the Exercise Document page.';
+    render();
+  }
+
+  function render() {
+    urls.forEach(u => URL.revokeObjectURL(u)); urls = [];
+    const root = $('#list');
+    root.textContent = '';
+    $('#empty').hidden = list.length > 0;
+    $('#tools').hidden = list.length === 0;
+    const q = TS.plain(filter.q);
+    const shown = list.filter(t => (!q || TS.plain(t.name).includes(q))
+      && (!filter.sec || t.section === filter.sec)
+      && (filter.use === 'all' || (filter.use === 'rep' ? t.uses > 1 : t.uses <= 1)));
+    $('#noresult').hidden = !list.length || shown.length > 0;
+    const groups = new Map();
+    for (const t of shown) { const k = t.section || 'No section'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
+    for (const [sec, ts] of groups) {
+      const g = document.createElement('section');
+      g.className = 'group';
+      g.innerHTML = `<h2></h2><div class="grid"></div>`;
+      g.querySelector('h2').innerHTML = `${esc(sec)} <span>· ${ts.length}</span>`;
+      const grid = g.querySelector('.grid');
+      for (const t of ts) grid.append(card(t));
+      root.append(g);
+    }
+  }
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function card(t) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tpl';
+    const th = document.createElement('div');
+    th.className = 'thumbs';
+    if (t.images.length) {
+      for (const im of t.images.slice(0, 4)) { const i = document.createElement('img'); i.loading = 'lazy'; i.alt = ''; i.src = url(im.blob); th.append(i); }
+      if (t.images.length > 4) th.insertAdjacentHTML('beforeend', `<span class="more">+${t.images.length - 4}</span>`);
+    } else th.innerHTML = `<span class="none">${icon.img}No photos</span>`;
+    const body = document.createElement('div');
+    body.className = 'body';
+    const used = t.uses > 1 ? `<span class="badge">Used ${t.uses}×</span>` : `<span class="badge once">Used once</span>`;
+    body.innerHTML = `<b></b><small>${used}${t.images.length} ${t.images.length === 1 ? 'photo' : 'photos'}${t.lastUsed ? ' · last in ' + esc(t.lastUsed) : ''}</small>`;
+    body.querySelector('b').textContent = t.name || 'Untitled exercise';
+    b.append(th, body);
+    b.addEventListener('click', () => edit(t));
+    return b;
+  }
+
+  // ---------- Edit dialog ----------
+  let editing = null, draft = null, dragIdx = -1;
+  function edit(t) {
+    editing = t;
+    draft = { ...t, images: [...t.images] };
+    $('#dlgTitle').textContent = t.id ? 'Edit template' : 'New template';
+    $('#fName').value = draft.name;
+    $('#fSec').value = draft.section;
+    $('#delBtn').hidden = !t.id;
+    drawSize(); drawPhotos();
+    $('#dlg').showModal();
+    $('#fName').focus();
+  }
+  function drawSize() { $$('#fSize button').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === draft.size)); }
+  $$('#fSize button').forEach(b => b.addEventListener('click', () => { draft.size = b.dataset.s; drawSize(); }));
+
+  function drawPhotos() {
+    const box = $('#fPhotos');
+    box.textContent = '';
+    draft.images.forEach((im, i) => {
+      const ph = document.createElement('div');
+      ph.className = 'ph';
+      ph.draggable = true;
+      ph.style.width = Math.round(96 * im.w / im.h) + 'px';
+      const img = document.createElement('img'); img.src = url(im.blob); img.alt = '';
+      const rm = document.createElement('button'); rm.type = 'button'; rm.innerHTML = icon.x; rm.title = rm.ariaLabel = 'Remove photo';
+      rm.addEventListener('click', () => { draft.images.splice(i, 1); drawPhotos(); });
+      ph.append(img, rm);
+      ph.addEventListener('dragstart', e => { dragIdx = i; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); requestAnimationFrame(() => ph.classList.add('dragging')); });
+      ph.addEventListener('dragend', () => { dragIdx = -1; drawPhotos(); });
+      ph.addEventListener('dragover', e => { if (dragIdx < 0) return; e.preventDefault(); $$('.drop-before').forEach(x => x.classList.remove('drop-before')); ph.classList.add('drop-before'); });
+      ph.addEventListener('drop', e => {
+        if (dragIdx < 0) return;
+        e.preventDefault(); e.stopPropagation();
+        const [m] = draft.images.splice(dragIdx, 1);
+        draft.images.splice(dragIdx < i ? i - 1 : i, 0, m);
+        dragIdx = -1; drawPhotos();
+      });
+      box.append(ph);
+    });
+    const add = document.createElement('button');
+    add.type = 'button'; add.className = 'addph'; add.textContent = '+ Add photos';
+    add.addEventListener('click', () => { $('#photoPicker').value = ''; $('#photoPicker').click(); });
+    box.append(add);
+  }
+
+  async function addPhotos(files) {
+    for (const f of [...files].filter(f => f.type.startsWith('image/'))) {
+      try {
+        const bmp = await createImageBitmap(f);
+        draft.images.push({ blob: f, w: bmp.width, h: bmp.height });
+        bmp.close();
+      } catch (e) { toast(`Can't open ${f.name}.`); }
+    }
+    drawPhotos();
+  }
+  $('#photoPicker').addEventListener('change', e => addPhotos(e.target.files));
+  const box = $('#fPhotos');
+  box.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('Files')) { e.preventDefault(); box.classList.add('over'); } else if (dragIdx >= 0) e.preventDefault(); });
+  box.addEventListener('dragleave', () => box.classList.remove('over'));
+  box.addEventListener('drop', e => {
+    box.classList.remove('over');
+    if (dragIdx >= 0) { e.preventDefault(); const [m] = draft.images.splice(dragIdx, 1); draft.images.push(m); dragIdx = -1; drawPhotos(); return; }
+    if (e.dataTransfer.files.length) { e.preventDefault(); addPhotos(e.dataTransfer.files); }
+  });
+  document.addEventListener('paste', e => { if ($('#dlg').open && e.clipboardData?.files.length) { e.preventDefault(); addPhotos(e.clipboardData.files); } });
+
+  $('#form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('#fName').value.trim();
+    if (!name) { $('#fName').focus(); return; }
+    const t = { ...draft, name, section: $('#fSec').value.trim(), id: draft.id || TS.newId(), uses: draft.uses || 0, lastUsed: draft.lastUsed || '' };
+    await TS.put(t);
+    $('#dlg').close();
+    toast(editing.id ? 'Template saved.' : 'Template added.');
+    await load();
+  });
+  $('#cancelBtn').addEventListener('click', () => $('#dlg').close());
+  $('#delBtn').addEventListener('click', async () => {
+    const t = editing;
+    await TS.remove(t.id);
+    $('#dlg').close();
+    await load();
+    toast(`“${t.name}” deleted.`, async () => { await TS.put(t); await load(); });
+  });
+  $('#newBtn').addEventListener('click', () => edit({ id: '', name: '', section: filter.sec || 'ĀSANAS', size: 'm', images: [], uses: 0, lastUsed: '' }));
+
+  // ---------- Import / export ----------
+  async function importPack(file) {
+    try {
+      toast('Importing templates…');
+      const n = await TS.importZip(file, p => $('#toastMsg').textContent = `Importing templates… ${Math.round(p * 100)}%`);
+      await load();
+      toast(`${n} templates imported.`);
+    } catch (e) { toast(e.message || 'Import failed.'); }
+  }
+  const pickPack = () => { $('#packPicker').value = ''; $('#packPicker').click(); };
+  $('#importBtn').addEventListener('click', pickPack);
+  $('#emptyImport').addEventListener('click', pickPack);
+  $('#packPicker').addEventListener('change', e => e.target.files[0] && importPack(e.target.files[0]));
+  $('#exportBtn').addEventListener('click', async () => {
+    toast('Preparing the templates file…');
+    const blob = await TS.exportZip();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'shantal-templates.zip';
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('Templates file downloaded. Import it in another browser to use the same templates there.');
+  });
+  const empty = $('#empty');
+  document.addEventListener('dragover', e => { if (!$('#dlg').open && [...e.dataTransfer.types].includes('Files')) { e.preventDefault(); empty.classList.add('over'); } });
+  document.addEventListener('dragleave', e => { if (!e.relatedTarget) empty.classList.remove('over'); });
+  document.addEventListener('drop', e => {
+    if ($('#dlg').open) return;
+    e.preventDefault(); empty.classList.remove('over');
+    const f = [...e.dataTransfer.files].find(f => /\.zip$/i.test(f.name));
+    if (f) importPack(f); else toast('Drop the templates .zip file here.');
+  });
+
+  // ---------- Filters ----------
+  let qTimer;
+  $('#q').addEventListener('input', e => { clearTimeout(qTimer); qTimer = setTimeout(() => { filter.q = e.target.value; render(); }, 120); });
+  $('#sec').addEventListener('change', e => { filter.sec = e.target.value; render(); });
+  $$('[data-use]').forEach(b => b.addEventListener('click', () => { filter.use = b.dataset.use; $$('[data-use]').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); }));
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'f' && !$('#dlg').open) { e.preventDefault(); $('#q').focus(); } });
+
+  let toastTimer;
+  function toast(msg, undo) {
+    $('#toastMsg').textContent = msg;
+    $('#toastUndo').hidden = !undo;
+    $('#toastUndo').onclick = () => { undo(); $('#toast').classList.remove('show'); };
+    $('#toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $('#toast').classList.remove('show'), undo ? 6000 : 3500);
+  }
+
+  TS.onChange(() => { if (!$('#dlg').open) load(); });
+
+  // First visit on the website: load the published templates file when there is one
+  (async () => {
+    await load();
+    if (list.length || !location.protocol.startsWith('http')) return;
+    try {
+      const r = await fetch('shantal-templates.zip', { cache: 'no-store' });
+      if (r.ok) await importPack(await r.blob());
+    } catch (e) {}
+  })();
+})();
+</script>
+</body>
+</html>
