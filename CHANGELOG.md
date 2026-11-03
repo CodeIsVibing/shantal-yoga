@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.6.2] - 2026-11-03
+
+### Changed
+- The pages are always dark, in every browser, whatever the computer's light or dark setting. The document page stays white.
+
 ## [1.6.1] - 2026-11-03
 
 ### Changed

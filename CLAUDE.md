@@ -78,7 +78,7 @@ Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici 
 ## Pravila za kod
 - Statične stranice bez build koraka: `index.html`, `batch.html`, `templates.html`, deljeni `templates-store.js`, `vendor/`.
 - Sav tekst u interfejsu na engleskom, jasne i opisne reči. Bez crtice „—“. Komentari u kodu na engleskom.
-- Svetla i tamna tema za okruženje; list papira je uvek beo.
+- Okruženje je uvek tamno, u svakom browseru (korisnik tražio 03.11.2026): tamne promenljive su u `@media all{…}` posle svetlih, nezavisno od teme sistema. List papira je uvek beo.
 - Vidljiv fokus za tastaturu, responsivnost do mobilnog, `prefers-reduced-motion`.
 
 ## Status
