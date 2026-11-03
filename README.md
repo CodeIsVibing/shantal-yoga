@@ -13,9 +13,9 @@ Your work is saved in the browser automatically. "Start a new document" clears t
 To change an existing file, click **Open Word file** (or press ⌘O, or drop the .docx onto the page). It works with files made here and with older session plans. Gray bands on the page show where Word will start a new page. They are approximate.
 
 ## Exercise templates
-Open **Manage templates** (or `templates.html`) to see every exercise from the past plans: 350 templates, 249 of them used more than once. Search, filter by section or by how often an exercise was used, edit a template (name, section, photo size, photos and their order), delete it (with Undo) or make a new one.
+Open **Manage templates** (or `templates.html`) to see every exercise from the past plans: 194 templates, 172 of them used more than once. Similar names are merged into one template that takes its name, photos and section from the newest plans. Search, filter by section or by how often an exercise was used, edit a template (name, section, photo size, photos and their order), delete it (with Undo) or make a new one.
 
-Templates live in this browser. To bring them in, click **Import** and choose `shantal-templates.zip`; **Export** saves the current templates as the same kind of file for another browser.
+Templates live only in this browser, on this computer. They are not uploaded to the website. To bring them in, click **Import** and choose `shantal-templates.zip`; when you already have templates, choose **Replace all** for a new, cleaned-up file (Undo brings the old ones back) or **Add to my templates**. **Export** saves the current templates as the same kind of file, as a backup or for another browser.
 
 On the Exercise Document page, choose an exercise in the **Templates** menu on the left and it is added to the end of its section; a missing section heading is added first.
 

@@ -2,6 +2,15 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.5.0] - 2026-11-03
+
+### Changed
+- Similar templates are merged into one: 194 templates instead of 350. Pose names match across spellings (bh/b, k/c, doubled letters, accents) but different poses and numbered variants stay apart. Name, photos, size and section come from the newest plans.
+- Leftovers are no longer templates: plan titles, the study (ESTUDIO) texts, category labels, caption fragments and the asana catalogue.
+
+### Added
+- Import asks what to do when templates already exist: Replace all (with Undo) or Add to my templates.
+
 ## [1.4.1] - 2026-11-03
 
 ### Fixed

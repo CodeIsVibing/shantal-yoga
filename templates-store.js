@@ -31,12 +31,13 @@ const TemplateStore = (() => {
 
   const MIME = { jpeg: 'image/jpeg', jpg: 'image/jpeg', png: 'image/png', gif: 'image/gif', bmp: 'image/bmp', webp: 'image/webp' };
 
-  // Adds the templates from a pack; a template with the same id is replaced
-  async function importZip(file, onProgress = () => {}) {
+  // Adds the templates from a pack (a template with the same id is replaced), or replaces them all
+  async function importZip(file, onProgress = () => {}, replace = false) {
     const zip = await JSZip.loadAsync(file);
     const meta = JSON.parse(await zip.file('templates.json')?.async('string') || 'null');
     if (meta?.format !== 'shantal-templates') throw new Error('This is not a templates file.');
     const list = meta.templates || [];
+    if (replace) await run('readwrite', s => s.clear());   // only after the file was read successfully
     const cache = new Map();
     for (const [i, t] of list.entries()) {
       if (i % 10 === 0) onProgress(i / list.length);
@@ -74,10 +75,16 @@ const TemplateStore = (() => {
     return zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
   }
 
+  // Puts back an earlier set of templates (used by Undo after Replace all)
+  async function replaceAll(list) {
+    await run('readwrite', s => { s.clear(); list.forEach(t => s.put(t)); });
+    changed();
+  }
+
   function onChange(fn) {
     channel?.addEventListener('message', fn);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') fn(); });
   }
 
-  return { SECTIONS, plain, all, put, remove, newId, importZip, exportZip, onChange };
+  return { SECTIONS, plain, all, put, remove, newId, importZip, exportZip, replaceAll, onChange };
 })();
