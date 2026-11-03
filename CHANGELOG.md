@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.4.1] - 2026-11-03
+
+### Fixed
+- Removed a Python cache folder (tools/__pycache__) that was committed by mistake, and ignored it from now on.
+
 ## [1.4.0] - 2026-11-03
 
 ### Added
