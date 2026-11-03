@@ -2,9 +2,9 @@
 
 Similar names are merged into one template (accents, punctuation, numbering, small spelling
 differences and extra words in brackets do not matter). The newest plan wins: a template takes
-its name, section, photos and photo size from the most recent plan that has them.
+its name, section and photos from the most recent plan that has them. Every template uses Large photos.
 
-Usage: python3 tools/build.py "New Yoga Files" templates-pack/shantal-templates.zip [report.txt]
+Usage: python3 tools/build.py "New Yoga Files" shantal-templates.zip [report.txt]
 """
 import sys, re, glob, json, hashlib, zipfile, unicodedata, collections, io, os, difflib
 sys.path.insert(0, os.path.dirname(__file__))
@@ -14,7 +14,6 @@ from PIL import Image
 SRC, OUT = sys.argv[1], sys.argv[2]
 REPORT = sys.argv[3] if len(sys.argv) > 3 else None
 ORDER = ['TOMA DE CONTACTO', 'PARTE DINÁMICA', 'ĀSANAS', 'PRĀNĀYAMA, MEDITACIÓN, RELAJACIÓN']
-SIZES = {'s': 2.6, 'm': 4, 'l': 6}
 
 
 def plain(s):
@@ -194,12 +193,12 @@ seen_imgs, zips, templates, report = {}, {}, [], []
 for members in clusters.values():
     occ = sorted((o for m in members for o in m['occ']), key=lambda o: o['rank'])
     newest = occ[-1]
-    imgs, size = [], 'm'
+    imgs = []
     for o in reversed(occ):                                  # newest plan that has usable photos
         if not o['images']:
             continue
         z = zips.setdefault(o['doc'], zipfile.ZipFile(o['doc']))
-        found, hs = [], []
+        found = []
         for path, hcm, wcm in o['images']:
             try:
                 data = z.read(path)
@@ -218,11 +217,9 @@ for members in clusters.values():
             fn = f'img/{hsh}.{"jpeg" if ext == "jpg" else ext}'
             if hsh not in seen_imgs:
                 pack.writestr(fn, data); seen_imgs[hsh] = fn
-            found.append({'file': fn, 'w': w, 'h': h}); hs.append(hcm)
+            found.append({'file': fn, 'w': w, 'h': h})
         if found:
             imgs = found
-            if hs and max(hs):
-                size = min(SIZES, key=lambda s: abs(SIZES[s] - max(hs)))
             break
     used_in = sorted({o['doc'] for o in occ}, key=doc_rank)
     key = ' '.join(sorted(m['key'] for m in members))
@@ -233,7 +230,7 @@ for members in clusters.values():
         score[o['name']] += 1 + (o['rank'] / top) ** 8
     name = max(score.items(), key=lambda kv: (kv[1], -len(kv[0])))[0]
     templates.append({'id': hashlib.sha1(key.encode()).hexdigest()[:10], 'name': name, 'section': newest['section'],
-                      'size': size, 'images': imgs, 'uses': len(used_in), 'lastUsed': os.path.basename(used_in[-1]).replace('.docx', '')})
+                      'size': 'l', 'images': imgs, 'uses': len(used_in), 'lastUsed': os.path.basename(used_in[-1]).replace('.docx', '')})
     if len(members) > 1:
         report.append(f"{name}  <=  " + ' | '.join(sorted({o['name'] for o in occ} - {name})))
 

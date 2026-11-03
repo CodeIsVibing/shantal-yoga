@@ -1,5 +1,5 @@
 // Exercise templates, shared by index.html and templates.html.
-// Stored in this browser (IndexedDB "shantal-templates"); moved between browsers as a .zip pack:
+// Kept in this browser (IndexedDB "shantal-templates"), filled from the pack on the website (see sync). Pack format:
 // templates.json + img/*. Pages that are open at the same time hear about changes on a BroadcastChannel.
 const TemplateStore = (() => {
   const SECTIONS = ['TOMA DE CONTACTO', 'PARTE DINÁMICA', 'ĀSANAS', 'PRĀNĀYAMA, MEDITACIÓN, RELAJACIÓN'];
@@ -52,7 +52,7 @@ const TemplateStore = (() => {
         }
         images.push({ blob, w: im.w, h: im.h });
       }
-      await run('readwrite', s => s.put({ id: t.id || newId(), name: t.name || '', section: t.section || '', size: t.size || 'm', images, uses: t.uses || 0, lastUsed: t.lastUsed || '', updated: Date.now() }));
+      await run('readwrite', s => s.put({ id: t.id || newId(), name: t.name || '', section: t.section || '', size: t.size || 'l', images, uses: t.uses || 0, lastUsed: t.lastUsed || '', updated: Date.now() }));
     }
     onProgress(1);
     changed();
@@ -81,10 +81,30 @@ const TemplateStore = (() => {
     changed();
   }
 
+  // The website carries the templates (shantal-templates.zip). When that file changes, every browser
+  // replaces its templates with it once, so all computers get the same set.
+  const PACK = 'shantal-templates.zip', SEEN = 'shantal-templates-pack';
+  let syncing;
+  function sync(onProgress) {
+    return syncing ||= (async () => {
+      if (!location.protocol.startsWith('http')) return false;
+      try {
+        const head = await fetch(PACK, { method: 'HEAD', cache: 'no-cache' });
+        const tag = head.ok && (head.headers.get('etag') || head.headers.get('last-modified') || head.headers.get('content-length'));
+        if (!tag || localStorage.getItem(SEEN) === tag) return false;
+        const r = await fetch(PACK, { cache: 'no-cache' });
+        if (!r.ok) return false;
+        await importZip(await r.blob(), onProgress, true);
+        localStorage.setItem(SEEN, tag);
+        return true;
+      } catch (e) { return false; }
+    })();
+  }
+
   function onChange(fn) {
     channel?.addEventListener('message', fn);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') fn(); });
   }
 
-  return { SECTIONS, plain, all, put, remove, newId, importZip, exportZip, replaceAll, onChange };
+  return { SECTIONS, plain, all, put, remove, newId, importZip, exportZip, replaceAll, sync, onChange };
 })();

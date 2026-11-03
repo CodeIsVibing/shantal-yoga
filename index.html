@@ -416,7 +416,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     img: '<svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2"/><circle cx="6" cy="6.5" r="1.2"/><path d="M14 10.5l-3.5-3.5L4 13"/></svg>'
   };
 
-  const newBlock = (type, text = '') => ({ id: ++uid, type, text, size: 'm', images: [] });
+  const newBlock = (type, text = '') => ({ id: ++uid, type, text, size: 'l', images: [] });
   const find = id => state.blocks.findIndex(b => b.id === id);
   const snapshot = () => state.blocks.map(b => ({ ...b, images: [...b.images] }));
   const fileName = () => (state.title.trim() || 'document').replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 80) || 'document';
@@ -1041,7 +1041,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
   function insertTemplate(t) {
     const before = snapshot();
     const v = newBlock('vezba', t.name);
-    v.size = t.size || 'm';
+    v.size = t.size || 'l';
     v.images = t.images.map(im => {
       const type = im.blob.type || 'image/jpeg';
       const file = new File([im.blob], 'photo.' + (type.split('/')[1] || 'jpg'), { type });
@@ -1068,7 +1068,7 @@ body.filedrag .sheet{box-shadow:0 0 0 2px var(--accent),0 18px 48px rgba(0,0,0,.
     if (t) insertTemplate(t);
   }));
   TemplateStore.onChange(loadTemplates);
-  loadTemplates();
+  loadTemplates().then(() => TemplateStore.sync()).then(fresh => fresh && loadTemplates());
 
   // ---------- PDF: the browser's "Save as PDF", from pages laid out like the Word file ----------
   const pdfPhotos = new Map();

@@ -2,6 +2,12 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.6.0] - 2026-11-03
+
+### Changed
+- The templates are on the website now. Every browser loads them on its own, and when the website's templates file changes it replaces the old templates with the new ones, so all computers have the same set.
+- Photos are Large by default: in every template, in new templates and in new exercises.
+
 ## [1.5.0] - 2026-11-03
 
 ### Changed

@@ -359,7 +359,7 @@ dialog[open]{animation:pop 200ms var(--ease)}
     await load();
     toast(`“${t.name}” deleted.`, async () => { await TS.put(t); await load(); });
   });
-  $('#newBtn').addEventListener('click', () => edit({ id: '', name: '', section: filter.sec || 'ĀSANAS', size: 'm', images: [], uses: 0, lastUsed: '' }));
+  $('#newBtn').addEventListener('click', () => edit({ id: '', name: '', section: filter.sec || 'ĀSANAS', size: 'l', images: [], uses: 0, lastUsed: '' }));
 
   // ---------- Import / export ----------
   // With templates already here, ask: replace them all (a new, cleaned file) or add to them
@@ -430,14 +430,13 @@ dialog[open]{animation:pop 200ms var(--ease)}
 
   TS.onChange(() => { if (!$('#dlg').open) load(); });
 
-  // First visit on the website: load the published templates file when there is one
+  // The website's templates replace the ones in this browser whenever they change
   (async () => {
     await load();
-    if (list.length || !location.protocol.startsWith('http')) return;
-    try {
-      const r = await fetch('shantal-templates.zip', { cache: 'no-store' });
-      if (r.ok) await importPack(await r.blob());
-    } catch (e) {}
+    if (await TS.sync(p => toast(`Loading templates from the website… ${Math.round(p * 100)}%`))) {
+      await load();
+      toast(`${list.length} templates loaded from the website.`);
+    }
   })();
 })();
 </script>

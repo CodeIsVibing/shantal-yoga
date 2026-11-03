@@ -15,7 +15,7 @@ To change an existing file, click **Open Word file** (or press ⌘O, or drop the
 ## Exercise templates
 Open **Manage templates** (or `templates.html`) to see every exercise from the past plans: 194 templates, 172 of them used more than once. Similar names are merged into one template that takes its name, photos and section from the newest plans. Search, filter by section or by how often an exercise was used, edit a template (name, section, photo size, photos and their order), delete it (with Undo) or make a new one.
 
-Templates live only in this browser, on this computer. They are not uploaded to the website. To bring them in, click **Import** and choose `shantal-templates.zip`; when you already have templates, choose **Replace all** for a new, cleaned-up file (Undo brings the old ones back) or **Add to my templates**. **Export** saves the current templates as the same kind of file, as a backup or for another browser.
+The templates are on the website (`shantal-templates.zip`), so every computer has the same set without importing anything. When that file changes, each browser replaces its templates with the new ones on the next visit. Edits and deletions made on the Templates page stay in that browser until the website's file changes again. **Import** and **Export** still work for moving a hand-made set between browsers.
 
 On the Exercise Document page, choose an exercise in the **Templates** menu on the left and it is added to the end of its section; a missing section heading is added first.
 

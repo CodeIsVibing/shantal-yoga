@@ -3,7 +3,7 @@ Thumbs.db
 *.docx
 node_modules/
 
-# Private plans and the templates pack with their photos: never publish without asking
+# Private plans (the published templates pack is shantal-templates.zip in the root)
 New Yoga Files/
 templates-pack/
 __pycache__/
