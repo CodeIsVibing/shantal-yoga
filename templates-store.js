@@ -36,7 +36,7 @@ const TemplateStore = (() => {
   async function importZip(file, onProgress = () => {}, replace = false) {
     const zip = await JSZip.loadAsync(file);
     const meta = JSON.parse(await zip.file('templates.json')?.async('string') || 'null');
-    if (meta?.format !== 'shantal-templates') throw new Error('This is not a templates file.');
+    if (meta?.format !== 'shantal-templates') throw new Error('Este no es un archivo de ejercicios.');
     const list = meta.templates || [];
     if (replace) await run('readwrite', s => s.clear());   // only after the file was read successfully
     const cache = new Map();

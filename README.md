@@ -2,6 +2,8 @@
 
 A page for building Shantal Yoga session plans as Word documents. You edit directly on a page that looks like the finished document. Photos are resized to the size they take up in the document, so the .docx stays small. Everything runs in the browser and photos never leave your computer.
 
+The interface is in Spanish. In it the page is called "Documento de ejercicios", the exercise templates are called "ejercicios" ("Gestionar ejercicios", "Añadir un ejercicio…"), and the batch page is "Reducir documentos". The English names below refer to the same buttons: Download Word file = "Descargar Word", Save as PDF = "Guardar como PDF", Open Word file = "Abrir archivo Word", Shrink many files = "Reducir muchos archivos".
+
 ## How to use
 1. Type the document title.
 2. Under each section heading, type the exercises. Enter adds a new line.

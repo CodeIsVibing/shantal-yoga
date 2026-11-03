@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Shrink Documents · Shantal Yoga</title>
+<title>Reducir documentos · Shantal Yoga</title>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script src="vendor/jszip.min.js"></script>
@@ -138,41 +138,41 @@ li.error .fn span{color:var(--danger)}
   <header>
     <div class="brand">
       <img src="logo.png" alt="Shantal Yoga">
-      <h1>Shrink documents</h1>
-      <p class="lead">Make many Word (.docx) and OpenDocument (.odt) files smaller. Every file is saved as a Word (.docx) file. Each photo is resized to the size it is shown at in the document, so it stays sharp. Files are handled one at a time on this computer and never uploaded.</p>
+      <h1>Reducir documentos</h1>
+      <p class="lead">Reduce el tamaño de muchos archivos Word (.docx) y OpenDocument (.odt). Cada archivo se guarda como Word (.docx). Cada foto se ajusta al tamaño con el que aparece en el documento, así se mantiene nítida. Los archivos se procesan uno a uno en este ordenador y nunca se suben a internet.</p>
     </div>
-    <a class="back" href="index.html"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Exercise Document</a>
+    <a class="back" href="index.html"><svg viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>Documento de ejercicios</a>
   </header>
 
-  <div class="banner" id="banner" role="status"><p id="bannerText"></p><button type="button" class="btn primary small" id="bannerBtn">Resume</button></div>
+  <div class="banner" id="banner" role="status"><p id="bannerText"></p><button type="button" class="btn primary small" id="bannerBtn">Continuar</button></div>
 
   <div class="grid">
     <section class="card">
-      <h2>1 · Add files</h2>
+      <h2>1 · Añadir archivos</h2>
       <div class="drop" id="drop">
-        <p>Drop .docx and .odt files or a whole folder here</p>
+        <p>Suelta aquí archivos .docx y .odt o una carpeta entera</p>
         <div class="row">
-          <button type="button" class="btn ghost" id="addFiles"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>Add files</button>
-          <button type="button" class="btn ghost" id="addFolder"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Add folder</button>
+          <button type="button" class="btn ghost" id="addFiles"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>Añadir archivos</button>
+          <button type="button" class="btn ghost" id="addFolder"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Añadir carpeta</button>
         </div>
       </div>
-      <p class="help">Files that were already finished are skipped automatically, even after you close the page.</p>
+      <p class="help">Los archivos ya terminados se saltan automáticamente, incluso después de cerrar la página.</p>
     </section>
 
     <section class="card">
-      <h2>2 · Settings</h2>
+      <h2>2 · Ajustes</h2>
       <div class="field">
-        <span class="lbl">Photo quality</span>
-        <div class="seg" role="group" aria-label="Photo quality">
-          <button type="button" data-q="balanced">Balanced</button>
-          <button type="button" data-q="high">High quality</button>
+        <span class="lbl">Calidad de las fotos</span>
+        <div class="seg" role="group" aria-label="Calidad de las fotos">
+          <button type="button" data-q="balanced">Equilibrada</button>
+          <button type="button" data-q="high">Alta calidad</button>
         </div>
         <p class="help" id="qHelp"></p>
       </div>
       <div class="field">
-        <span class="lbl">Save finished files to</span>
-        <div class="folder"><b id="outName" class="none">Downloads (each file right after it is finished)</b><button type="button" class="btn ghost small" id="pickOut">Choose folder</button></div>
-        <p class="help" id="outHelp">Choose an empty folder. The original files are never changed.</p>
+        <span class="lbl">Guardar los archivos terminados en</span>
+        <div class="folder"><b id="outName" class="none">Descargas (cada archivo justo al terminar)</b><button type="button" class="btn ghost small" id="pickOut">Elegir carpeta</button></div>
+        <p class="help" id="outHelp">Elige una carpeta vacía. Los archivos originales nunca se modifican.</p>
       </div>
     </section>
   </div>
@@ -180,12 +180,12 @@ li.error .fn span{color:var(--danger)}
   <section class="card progress-card" aria-live="polite">
     <div class="top">
       <div class="totals">
-        <div class="big" id="tBig">No files yet</div>
-        <div class="sub" id="tSub">Add files to start.</div>
+        <div class="big" id="tBig">Aún no hay archivos</div>
+        <div class="sub" id="tSub">Añade archivos para empezar.</div>
       </div>
       <div class="actions">
-        <button type="button" class="btn ghost" id="pause" hidden>Pause after this file</button>
-        <button type="button" class="btn primary big" id="start" disabled>Start</button>
+        <button type="button" class="btn ghost" id="pause" hidden>Pausar tras este archivo</button>
+        <button type="button" class="btn primary big" id="start" disabled>Empezar</button>
       </div>
     </div>
     <div class="bar" aria-hidden="true"><i id="barAll"></i></div>
@@ -198,15 +198,15 @@ li.error .fn span{color:var(--danger)}
 
   <section class="card">
     <div class="list-head">
-      <h2>Files</h2>
+      <h2>Archivos</h2>
       <div class="counts" id="counts"></div>
       <div style="display:flex;gap:6px">
-        <button type="button" class="btn ghost small" id="retry" hidden>Retry failed</button>
-        <button type="button" class="btn ghost small" id="clear" hidden>Clear list</button>
+        <button type="button" class="btn ghost small" id="retry" hidden>Reintentar fallidos</button>
+        <button type="button" class="btn ghost small" id="clear" hidden>Vaciar lista</button>
       </div>
     </div>
     <ul class="files" id="files"></ul>
-    <p class="empty" id="empty">The list of files appears here: waiting, working and finished.</p>
+    <p class="empty" id="empty">Aquí aparece la lista de archivos: en espera, en proceso y terminados.</p>
   </section>
 </div>
 
@@ -218,8 +218,8 @@ li.error .fn span{color:var(--danger)}
 (() => {
   JSZip.defaults.createFolders = false;     // no empty folder entries in the saved files
   const QUALITY = {
-    balanced: { dpi: 200, q: 0.82, help: '200 dpi, JPEG 82%. Sharp on screen and on paper, smaller files.' },
-    high: { dpi: 300, q: 0.88, help: '300 dpi, JPEG 88%. Print sharpness, files stay a bit larger.' }
+    balanced: { dpi: 200, q: 0.82, help: '200 dpi, JPEG 82%. Nítido en pantalla y en papel, archivos más pequeños.' },
+    high: { dpi: 300, q: 0.88, help: '300 dpi, JPEG 88%. Nitidez de imprenta, archivos algo más grandes.' }
   };
   const MAX_UNKNOWN = 2400;           // longest side for photos whose display size is unknown
   const MIN_GAIN = 0.92;              // keep the original photo unless the new one is at least 8% smaller
@@ -267,8 +267,8 @@ li.error .fn span{color:var(--danger)}
       st.items.push(it);
       added++;
     }
-    if (added || again) toast(`${added + again} ${added + again === 1 ? 'file' : 'files'} added.`);
-    else if (list.length) toast('No new .docx or .odt files found.');
+    if (added || again) toast(`${added + again} ${added + again === 1 ? 'archivo añadido' : 'archivos añadidos'}.`);
+    else if (list.length) toast('No se encontraron archivos .docx u .odt nuevos.');
     saveQueue();
     render();
   }
@@ -323,10 +323,10 @@ li.error .fn span{color:var(--danger)}
 
   // ---------- Output folder ----------
   $('#pickOut').addEventListener('click', async () => {
-    if (!hasFS) return toast('This browser saves each finished file to Downloads.');
+    if (!hasFS) return toast('Este navegador guarda cada archivo terminado en Descargas.');
     try {
       const dir = await showDirectoryPicker({ id: 'docs-out', mode: 'readwrite' });
-      for (const d of st.inDirs) if (await d.isSameEntry(dir)) return toast('This is the folder with the originals. Choose another folder.');
+      for (const d of st.inDirs) if (await d.isSameEntry(dir)) return toast('Esta es la carpeta de los originales. Elige otra carpeta.');
       st.outDir = dir;
       put('outDir', dir);
       render();
@@ -339,11 +339,11 @@ li.error .fn span{color:var(--danger)}
     return (await h.requestPermission({ mode })) === 'granted';
   }
 
-  // Output is always .docx; an .odt whose name clashes with a .docx in the same list gets " (from odt)"
+  // Output is always .docx; an .odt whose name clashes with a .docx in the same list gets " (de odt)"
   function outPath(it) {
     if (!/\.odt$/i.test(it.path)) return it.path;
     const p = it.path.replace(/\.odt$/i, '.docx');
-    return st.items.some(x => x !== it && x.path.toLowerCase() === p.toLowerCase()) ? it.path.replace(/\.odt$/i, ' (from odt).docx') : p;
+    return st.items.some(x => x !== it && x.path.toLowerCase() === p.toLowerCase()) ? it.path.replace(/\.odt$/i, ' (de odt).docx') : p;
   }
 
   async function writeOut(it, blob) {
@@ -471,7 +471,7 @@ li.error .fn span{color:var(--danger)}
     const load = async p => { const x = await src.file(p)?.async('string'); return x ? new DOMParser().parseFromString(x, 'application/xml') : null; };
     const content = await load('content.xml'), sdoc = await load('styles.xml');
     const textEl = content?.getElementsByTagNameNS(ODF.office, 'text')[0];
-    if (!textEl) throw new Error('This .odt file has no text to convert');
+    if (!textEl) throw new Error('Este archivo .odt no tiene texto que convertir');
     const docs = [sdoc, content].filter(Boolean);
     const all = (ns, tag) => docs.flatMap(d => [...d.getElementsByTagNameNS(ODF[ns], tag)]);
 
@@ -695,7 +695,7 @@ li.error .fn span{color:var(--danger)}
 
     const doc = newPart();
     rel(doc, 'styles', 'styles.xml');
-    let body = await blocks(doc, textEl, f => onStep('Converting to .docx', 0.04 + 0.2 * f));
+    let body = await blocks(doc, textEl, f => onStep('Convirtiendo a .docx', 0.04 + 0.2 * f));
     if (!body.endsWith('</w:p>')) body += '<w:p/>';
 
     // Header and footer of the main master page
@@ -773,12 +773,12 @@ li.error .fn span{color:var(--danger)}
   // Every document comes out as .docx: .odt files are converted first, then photos are shrunk the same way
   async function shrinkDocument(file, onStep) {
     const cfg = QUALITY[st.quality];
-    onStep('Reading the file', 0.02);
+    onStep('Leyendo el archivo', 0.02);
     let zip;
-    try { zip = await JSZip.loadAsync(file); } catch (e) { throw new Error('Not a valid .docx or .odt file'); }
+    try { zip = await JSZip.loadAsync(file); } catch (e) { throw new Error('No es un archivo .docx u .odt válido'); }
     const converted = !zip.file('word/document.xml');
     if (converted) {
-      if (!zip.file('content.xml')) throw new Error('Not a Word or OpenDocument text file');
+      if (!zip.file('content.xml')) throw new Error('No es un documento de texto Word u OpenDocument');
       zip = await odtToDocx(zip, onStep);
     }
     const need = await docxNeeds(zip);
@@ -787,7 +787,7 @@ li.error .fn span{color:var(--danger)}
     const types = new Map();        // old path -> [new path, mime]
     let changed = 0;
     for (const [i, p] of media.entries()) {
-      onStep(`Optimizing photo ${i + 1} of ${media.length}`, 0.25 + 0.65 * i / media.length);
+      onStep(`Optimizando foto ${i + 1} de ${media.length}`, 0.25 + 0.65 * i / media.length);
       await yieldUI();
       const ext = p.split('.').pop().toLowerCase();
       if (!MIME[ext] || ext === 'gif') continue;
@@ -805,7 +805,7 @@ li.error .fn span{color:var(--danger)}
     }
 
     if (renames.size) {
-      onStep('Updating references', 0.9);
+      onStep('Actualizando referencias', 0.9);
       for (const rp of Object.keys(zip.files).filter(p => p.endsWith('.rels'))) {
         const s = await zip.file(rp).async('string');
         const u = s.replace(/Target="([^"]+)"/g, (m, t) => {
@@ -821,11 +821,11 @@ li.error .fn span{color:var(--danger)}
       zip.file('[Content_Types].xml', ct);
     }
 
-    onStep('Packing the document', 0.92);
+    onStep('Empaquetando el documento', 0.92);
     const out = await zip.generateAsync({
       type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 },
       mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    }, meta => onStep('Packing the document', 0.92 + 0.07 * meta.percent / 100));
+    }, meta => onStep('Empaquetando el documento', 0.92 + 0.07 * meta.percent / 100));
     // A .docx that did not get smaller is saved as the original bytes, so the output folder is still complete
     return converted || out.size < file.size ? { blob: out, changed, converted } : { blob: file, changed: 0, converted };
   }
@@ -838,8 +838,8 @@ li.error .fn span{color:var(--danger)}
   async function start() {
     if (st.running) return;
     if (st.outDir) {
-      if (!await permitted(st.outDir, 'readwrite')) return toast('Saving needs permission for the chosen folder.');
-      if (await holdsOriginals()) return toast('This folder seems to hold the original files. Choose an empty folder so originals are never overwritten.');
+      if (!await permitted(st.outDir, 'readwrite')) return toast('Para guardar hace falta permiso en la carpeta elegida.');
+      if (await holdsOriginals()) return toast('Parece que esta carpeta contiene los archivos originales. Elige una carpeta vacía para no sobrescribirlos nunca.');
     }
     for (const d of st.inDirs) await permitted(d, 'read').catch(() => false);
     st.running = true; st.pause = false;
@@ -857,7 +857,7 @@ li.error .fn span{color:var(--danger)}
     put('current', null);
     render();
     const left = st.items.filter(x => x.status === 'waiting').length;
-    toast(st.pause && left ? `Paused. ${left} ${left === 1 ? 'file' : 'files'} left.` : 'All files are finished.');
+    toast(st.pause && left ? `En pausa. ${left === 1 ? 'Queda 1 archivo' : `Quedan ${left} archivos`}.` : 'Todos los archivos están terminados.');
   }
 
   async function runOne(it) {
@@ -868,19 +868,19 @@ li.error .fn span{color:var(--danger)}
     render();
     try {
       const file = it.file || (it.handle && await it.handle.getFile());
-      if (!file) throw new Error('File is not available. Add it again.');
+      if (!file) throw new Error('El archivo no está disponible. Añádelo de nuevo.');
       it.size = file.size;
       const res = await shrinkDocument(file, (step, p) => { it.step = step; it.progress = p; renderCurrent(it); });
-      it.step = 'Saving'; it.progress = 0.995; renderCurrent(it);
+      it.step = 'Guardando'; it.progress = 0.995; renderCurrent(it);
       await writeOut(it, res.blob);
       it.status = 'done'; it.before = file.size; it.after = res.blob.size;
-      const photos = res.changed ? `${res.changed} ${res.changed === 1 ? 'photo' : 'photos'} optimized` : '';
-      it.msg = res.converted ? `Converted to .docx${photos ? ', ' + photos : ''}` : photos || 'Already small, saved unchanged';
+      const photos = res.changed ? `${res.changed} ${res.changed === 1 ? 'foto optimizada' : 'fotos optimizadas'}` : '';
+      it.msg = res.converted ? `Convertido a .docx${photos ? ', ' + photos : ''}` : photos || 'Ya era pequeño, guardado sin cambios';
       st.done[it.key] = { name: it.name, before: it.before, after: it.after, at: Date.now() };
       await put('done', st.done);
     } catch (e) {
       it.status = 'error';
-      it.msg = e?.message || 'Something went wrong';
+      it.msg = e?.message || 'Algo salió mal';
     }
     it.file = it.handle ? undefined : it.file;    // free memory when the file can be read again from disk
     await put('current', null);
@@ -889,12 +889,12 @@ li.error .fn span{color:var(--danger)}
   }
 
   $('#start').addEventListener('click', start);
-  $('#pause').addEventListener('click', () => { st.pause = true; render(); toast('Pausing after the current file.'); });
+  $('#pause').addEventListener('click', () => { st.pause = true; render(); toast('Se pausará después del archivo actual.'); });
   $('#retry').addEventListener('click', () => { st.items.forEach(x => { if (x.status === 'error') { x.status = 'waiting'; st.attempts[x.key] = 0; } }); saveQueue(); render(); start(); });
   $('#clear').addEventListener('click', () => {
     st.items = st.items.filter(x => x.status === 'working');
     saveQueue(); render();
-    toast('List cleared. Finished files are still remembered and will be skipped.');
+    toast('Lista vaciada. Los archivos terminados se recuerdan y se saltarán.');
   });
   $$('.seg button').forEach(b => b.addEventListener('click', () => { if (st.running) return; st.quality = b.dataset.q; put('quality', st.quality); render(); }));
   window.addEventListener('beforeunload', e => { if (st.running) { e.preventDefault(); e.returnValue = ''; } });
@@ -908,7 +908,7 @@ li.error .fn span{color:var(--danger)}
     error: '<svg viewBox="0 0 16 16"><path d="M8 4v5M8 11.5v.5"/></svg>',
     needs: '<svg viewBox="0 0 16 16"><path d="M8 4v5M8 11.5v.5"/></svg>'
   };
-  const LABEL = { waiting: 'Waiting', working: 'Working', done: 'Finished', skipped: 'Finished earlier', error: 'Failed', needs: 'Add this file again to continue' };
+  const LABEL = { waiting: 'En espera', working: 'En proceso', done: 'Terminado', skipped: 'Terminado antes', error: 'Fallido', needs: 'Añade este archivo de nuevo para continuar' };
 
   function renderCurrent(it) {
     $('#current').classList.toggle('show', !!it);
@@ -927,9 +927,9 @@ li.error .fn span{color:var(--danger)}
     const before = fin.reduce((a, x) => a + (x.before || 0), 0), after = fin.reduce((a, x) => a + (x.after || 0), 0);
     const workingCount = st.items.some(x => x.status === 'working') ? curP : 0;
     $('#barAll').style.transform = `scaleX(${all ? (fin.length + st.items.filter(x => x.status === 'error').length + workingCount) / all : 0})`;
-    $('#tBig').textContent = all ? `${fin.length} of ${all} files finished` : 'No files yet';
-    $('#tSub').textContent = !all ? 'Add files to start.'
-      : before ? `${fmt(before)} became ${fmt(after)}, ${Math.round((1 - after / before) * 100)}% smaller` : st.running ? 'Working on the first file.' : 'Press Start when you are ready.';
+    $('#tBig').textContent = all ? `${fin.length} de ${all} archivos terminados` : 'Aún no hay archivos';
+    $('#tSub').textContent = !all ? 'Añade archivos para empezar.'
+      : before ? `De ${fmt(before)} a ${fmt(after)}, un ${Math.round((1 - after / before) * 100)}% menos` : st.running ? 'Procesando el primer archivo.' : 'Pulsa Empezar cuando quieras.';
   }
 
   function render() {
@@ -951,10 +951,10 @@ li.error .fn span{color:var(--danger)}
     const c = s => st.items.filter(x => x.status === s).length;
     const waiting = c('waiting'), errors = c('error');
     $('#empty').hidden = st.items.length > 0;
-    $('#counts').innerHTML = st.items.length ? [['waiting', 'waiting'], ['done', 'finished'], ['skipped', 'finished earlier'], ['error', 'failed'], ['needs', 'need adding again']]
+    $('#counts').innerHTML = st.items.length ? [['waiting', 'en espera'], ['done', 'terminados'], ['skipped', 'terminados antes'], ['error', 'fallidos'], ['needs', 'por añadir de nuevo']]
       .filter(([s]) => c(s)).map(([s, l]) => `<span class="pill">${c(s)} ${l}</span>`).join('') : '';
     $('#start').disabled = st.running || !waiting;
-    $('#start').textContent = st.running ? 'Working…' : st.items.some(x => x.status === 'done') && waiting ? 'Continue' : 'Start';
+    $('#start').textContent = st.running ? 'Procesando…' : st.items.some(x => x.status === 'done') && waiting ? 'Continuar' : 'Empezar';
     $('#pause').hidden = !st.running || st.pause;
     $('#retry').hidden = st.running || !errors;
     $('#clear').hidden = st.running || !st.items.length;
@@ -963,9 +963,9 @@ li.error .fn span{color:var(--danger)}
     $('#pickOut').disabled = st.running;
     $('#pickOut').hidden = !hasFS;
     const out = $('#outName');
-    out.textContent = st.outDir ? st.outDir.name : 'Downloads (each file right after it is finished)';
+    out.textContent = st.outDir ? st.outDir.name : 'Descargas (cada archivo justo al terminar)';
     out.classList.toggle('none', !st.outDir);
-    $('#outHelp').textContent = hasFS ? 'Choose an empty folder. The original files are never changed.' : 'Each file is downloaded as soon as it is finished. The original files are never changed.';
+    $('#outHelp').textContent = hasFS ? 'Elige una carpeta vacía. Los archivos originales nunca se modifican.' : 'Cada archivo se descarga en cuanto termina. Los archivos originales nunca se modifican.';
     renderCurrent(st.items.find(x => x.status === 'working'));
     renderTotals(st.items.find(x => x.status === 'working')?.progress || 0);
   }
@@ -991,7 +991,7 @@ li.error .fn span{color:var(--danger)}
       const it = { ...q };
       if (st.done[it.key] && it.status !== 'done') Object.assign(it, { status: 'skipped', before: st.done[it.key].before, after: st.done[it.key].after });
       if (it.key === crashed) {
-        if ((st.attempts[it.key] || 0) >= 2) Object.assign(it, { status: 'error', msg: 'The page stopped twice on this file, so it was skipped' });
+        if ((st.attempts[it.key] || 0) >= 2) Object.assign(it, { status: 'error', msg: 'La página se detuvo dos veces con este archivo, así que se saltó' });
         else it.status = 'waiting';
       }
       if (it.status === 'waiting' && !it.handle) it.status = 'needs';
@@ -1005,8 +1005,8 @@ li.error .fn span{color:var(--danger)}
     const needs = st.items.filter(x => x.status === 'needs').length;
     const doneN = st.items.filter(x => x.status === 'done' || x.status === 'skipped').length;
     $('#bannerText').textContent = needs
-      ? `Your last batch stopped with ${doneN} finished and ${left} left. Add the same files or folder again to continue; finished files are skipped.`
-      : `Your last batch stopped with ${doneN} finished and ${left} left.${crashed ? ' It was interrupted while working.' : ''}`;
+      ? `Tu último lote se detuvo con ${doneN} terminados y ${left} pendientes. Añade de nuevo los mismos archivos o la carpeta para continuar; los terminados se saltan.`
+      : `Tu último lote se detuvo con ${doneN} terminados y ${left} pendientes.${crashed ? ' Se interrumpió mientras trabajaba.' : ''}`;
     $('#bannerBtn').hidden = !!needs;
     $('#banner').classList.add('show');
     $('#bannerBtn').onclick = start;
@@ -1015,7 +1015,7 @@ li.error .fn span{color:var(--danger)}
       const ok = (!st.outDir || await st.outDir.queryPermission?.({ mode: 'readwrite' }) === 'granted')
         && (await Promise.all(st.items.filter(x => x.status === 'waiting').slice(0, 1).map(x => x.handle.queryPermission?.({ mode: 'read' })))).every(p => p === 'granted' || p === undefined);
       if (ok) {
-        for (let s = 3; s > 0; s--) { $('#bannerText').textContent = `Continuing your last batch in ${s}…`; await sleep(1000); if (st.running) return; }
+        for (let s = 3; s > 0; s--) { $('#bannerText').textContent = `Continuando tu último lote en ${s}…`; await sleep(1000); if (st.running) return; }
         start();
       }
     }

@@ -2,6 +2,13 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.7.0] - 2026-11-03
+
+### Changed
+- The whole interface is in Spanish: the editor, the exercises page and the shrink page, including buttons, help texts, messages, progress steps, tooltips and screen reader labels.
+- Exercise templates are now called "ejercicios" in the interface ("Gestionar ejercicios", "Añadir un ejercicio…", "Nuevo ejercicio").
+- The default file name is "documento.docx", and a converted .odt whose name clashes with a .docx is saved with " (de odt)".
+
 ## [1.6.3] - 2026-11-03
 
 ### Fixed

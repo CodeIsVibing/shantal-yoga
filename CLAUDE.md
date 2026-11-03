@@ -1,7 +1,7 @@
 # Shantal Yoga Exercise Document
 
 ## Šta je projekat
-Statična web stranica (`index.html`) za pravljenje Word dokumenta po uzoru na mesečne planove časa „Shantal Yoga“ (referenca: `~/Downloads/2025 02 Febrero_compressed.docx`). Interfejs je na engleskom, naziv je „Shantal Yoga Exercise Document“ (ranije „Photos to Word“). Raspored u tri kolone: levo Outline (pregled dokumenta, klik skače na red), u sredini A4 strana na kojoj se uređuje direktno, desno panel Document (broj delova/vežbi/slika, kvalitet, ime fajla, procena veličine, **Download Word file**; kartica File sa dugmadima „New document“ i „Open Word file“). Na užim ekranima levi panel nestaje (<1400 px), pa i desni (<1120 px) i tada izvoz ide preko plutajuće trake na dnu.
+Statična web stranica (`index.html`) za pravljenje Word dokumenta po uzoru na mesečne planove časa „Shantal Yoga“ (referenca: `~/Downloads/2025 02 Febrero_compressed.docx`). Interfejs je na španskom od v1.7.0 (03.11.2026, pre toga engleski), naziv je „Documento de ejercicios“ (ranije „Shantal Yoga Exercise Document“, pa „Photos to Word“). Sav tekst u interfejsu (dugmad, poruke, aria-label, title) piše se na španskom, sa „tú“ imperativom („Elige“, „Añade“). Nazivi u ovom fajlu ispod su često ostali na engleskom; u interfejsu važi španski. Raspored u tri kolone: levo Outline (pregled dokumenta, klik skače na red), u sredini A4 strana na kojoj se uređuje direktno, desno panel Document (broj delova/vežbi/slika, kvalitet, ime fajla, procena veličine, **Download Word file**; kartica File sa dugmadima „New document“ i „Open Word file“). Na užim ekranima levi panel nestaje (<1400 px), pa i desni (<1120 px) i tada izvoz ide preko plutajuće trake na dnu.
 
 Hostuje se na GitHub Pages. Mora da radi i lokalno (`file://`), bez interneta.
 
@@ -66,9 +66,9 @@ Zasebna stranica „Shrink documents“, link „Shrink many files“ u kartici 
 `favicon.png` (128 px) i `favicon.svg` su ruža izdvojena iz loga (najveća povezana celina + detalji unutar nje), tesno isečena, bez pozadine. SVG u tamnoj temi browsera invertuje ružu u svetlu.
 
 ## Interfejs
-- Nazivi: „Section heading“ (deo, interno `deo`), „Exercise“ (vežba, interno `vezba`), „Add photos“, veličina „Small / Medium / Large“, kvalitet „Smaller file“ (150 dpi) / „Print quality“ (300 dpi).
-- Nov dokument ima samo „Document title“; sve ispod korisnik dodaje dugmadima „Section heading“ i „Exercise with photos“ (prazna strana pokazuje kratko uputstvo `.start-hint`).
-- Kontrole vežbe (Small/Medium/Large, Add photos) plutaju u malom meniju iznad reda (`.line-tools`), da ne prekrivaju centriran naziv. Na mobilnom stoje ispod naziva.
+- Nazivi (španski): „Título de sección“ (deo, interno `deo`), „Ejercicio“ (vežba, interno `vezba`), „Añadir fotos“, veličina „Pequeño / Mediano / Grande“, kvalitet „Más ligero“ (150 dpi) / „Para imprimir“ (300 dpi), u traci na dnu kraće „Ligero / Imprimir“. Šabloni se u interfejsu zovu „ejercicios“ (kartica „Ejercicios“, „Añadir un ejercicio (194)…“, „Gestionar ejercicios“, stranica `templates.html` sa naslovom „Ejercicios“); interno (kod, IndexedDB, fajlovi) i dalje „templates“. Batch stranica: „Reducir documentos“, link „Reducir muchos archivos“.
+- Nov dokument ima samo „Título del documento“; sve ispod korisnik dodaje dugmadima „Título de sección“ i „Ejercicio con fotos“ (prazna strana pokazuje kratko uputstvo `.start-hint`).
+- Kontrole vežbe (Pequeño/Mediano/Grande, Añadir fotos) plutaju u malom meniju iznad reda (`.line-tools`), da ne prekrivaju centriran naziv. Na mobilnom stoje ispod naziva.
 - Sekcija „Shortcuts“ je uklonjena (prečice i dalje rade).
 - Slike: dugme „Add photos“, prevlačenje na vežbu ili bilo gde na stranu (nova vežba), lepljenje sa ⌘V.
 - Redosled slika: prevlačenje mišem, ili fokus na sliku pa Alt + strelice. Delete uklanja.

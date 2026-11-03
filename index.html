@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Shantal Yoga Exercise Document</title>
+<title>Shantal Yoga · Documento de ejercicios</title>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script src="vendor/jszip.min.js"></script>
@@ -267,88 +267,88 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
 </head>
 <body>
 
-<aside class="side left" aria-label="Outline">
-  <div class="brand"><img class="js-logo" alt="Shantal Yoga"><span>Exercise Document</span></div>
+<aside class="side left" aria-label="Esquema">
+  <div class="brand"><img class="js-logo" alt="Shantal Yoga"><span>Documento de ejercicios</span></div>
   <section class="card tpl-card">
-    <h2>Templates</h2>
-    <select class="tpl-select js-tpl" aria-label="Add an exercise from a template"></select>
-    <p class="help tpl-help">Choose an exercise and it appears in its section of the document.</p>
-    <a class="btn ghost block tpl-manage" href="templates.html"><svg viewBox="0 0 16 16"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z"/></svg>Manage templates</a>
+    <h2>Ejercicios</h2>
+    <select class="tpl-select js-tpl" aria-label="Añadir un ejercicio guardado"></select>
+    <p class="help tpl-help">Elige un ejercicio y aparecerá en su sección del documento.</p>
+    <a class="btn ghost block tpl-manage" href="templates.html"><svg viewBox="0 0 16 16"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z"/></svg>Gestionar ejercicios</a>
   </section>
   <section class="card outline-card">
-    <h2>Outline</h2>
+    <h2>Esquema</h2>
     <ul class="outline" id="outline"></ul>
   </section>
 </aside>
 
 <div class="stage">
-  <div class="page-label"><span>A4 page preview</span><span>Edit directly on the page</span></div>
-  <main class="sheet" id="sheet" aria-label="Document">
+  <div class="page-label"><span>Vista previa en A4</span><span>Edita directamente en la página</span></div>
+  <main class="sheet" id="sheet" aria-label="Documento">
     <img class="logo js-logo" alt="Shantal Yoga">
-    <input class="doc-title" id="title" placeholder="Document title" aria-label="Document title" autocomplete="off">
+    <input class="doc-title" id="title" placeholder="Título del documento" aria-label="Título del documento" autocomplete="off">
     <div id="blocks"></div>
-    <p class="start-hint">Everything below the title is added by you. Start with a section heading or an exercise.</p>
+    <p class="start-hint">Todo lo que va debajo del título lo añades tú. Empieza con un título de sección o un ejercicio.</p>
     <div class="adders">
-      <button type="button" data-add="deo" title="Bold, underlined heading that starts a new part of the session"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Section heading</button>
-      <button type="button" data-add="vezba" title="Exercise name with a row of photos"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Exercise with photos</button>
+      <button type="button" data-add="deo" title="Título en negrita y subrayado que abre una nueva parte de la sesión"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Título de sección</button>
+      <button type="button" data-add="vezba" title="Nombre del ejercicio con una fila de fotos"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Ejercicio con fotos</button>
     </div>
   </main>
 </div>
 
-<aside class="side right" aria-label="Download">
+<aside class="side right" aria-label="Descargar">
   <section class="card tpl-card tpl-right">
-    <h2>Templates</h2>
-    <select class="tpl-select js-tpl" aria-label="Add an exercise from a template"></select>
-    <p class="help tpl-help">Choose an exercise and it appears in its section of the document.</p>
-    <a class="btn ghost block tpl-manage" href="templates.html"><svg viewBox="0 0 16 16"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z"/></svg>Manage templates</a>
+    <h2>Ejercicios</h2>
+    <select class="tpl-select js-tpl" aria-label="Añadir un ejercicio guardado"></select>
+    <p class="help tpl-help">Elige un ejercicio y aparecerá en su sección del documento.</p>
+    <a class="btn ghost block tpl-manage" href="templates.html"><svg viewBox="0 0 16 16"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z"/></svg>Gestionar ejercicios</a>
   </section>
   <section class="card">
-    <h2>Document</h2>
+    <h2>Documento</h2>
     <div class="stats">
-      <div class="stat"><b id="nSec">0</b><span>Sections</span></div>
-      <div class="stat"><b id="nEx">0</b><span>Exercises</span></div>
-      <div class="stat"><b id="nImg">0</b><span>Photos</span></div>
+      <div class="stat"><b id="nSec">0</b><span>Secciones</span></div>
+      <div class="stat"><b id="nEx">0</b><span>Ejercicios</span></div>
+      <div class="stat"><b id="nImg">0</b><span>Fotos</span></div>
     </div>
     <div class="field">
-      <span class="lbl">Photo quality</span>
-      <div class="seg" role="group" aria-label="Photo quality">
-        <button type="button" data-q="screen">Smaller file</button>
-        <button type="button" data-q="print">Print quality</button>
+      <span class="lbl">Calidad de las fotos</span>
+      <div class="seg" role="group" aria-label="Calidad de las fotos">
+        <button type="button" data-q="screen">Más ligero</button>
+        <button type="button" data-q="print">Para imprimir</button>
       </div>
       <p class="help" id="qHelp"></p>
     </div>
-    <div class="kv"><span>File name</span><b id="fileName">document.docx</b></div>
-    <div class="kv"><span>Pages</span><b id="nPages" title="Approximate. Page breaks are shown on the page.">1</b></div>
-    <div class="kv" style="margin-bottom:14px"><span>Estimated size</span><b id="estSize">0 KB</b></div>
-    <button type="button" class="btn primary big block js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Download Word file</span></button>
-    <button type="button" class="btn ghost block js-pdf" style="margin-top:8px"><svg viewBox="0 0 16 16"><path d="M4 6V2.5h8V6M4 12H2.5V7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v5H12M4.5 9.5h7v4h-7z"/></svg><span>Save as PDF</span></button>
-    <p class="saved"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Your work is saved in this browser</p>
+    <div class="kv"><span>Nombre del archivo</span><b id="fileName">documento.docx</b></div>
+    <div class="kv"><span>Páginas</span><b id="nPages" title="Aproximado. Los saltos de página se ven en la página.">1</b></div>
+    <div class="kv" style="margin-bottom:14px"><span>Tamaño estimado</span><b id="estSize">0 KB</b></div>
+    <button type="button" class="btn primary big block js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Descargar Word</span></button>
+    <button type="button" class="btn ghost block js-pdf" style="margin-top:8px"><svg viewBox="0 0 16 16"><path d="M4 6V2.5h8V6M4 12H2.5V7a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v5H12M4.5 9.5h7v4h-7z"/></svg><span>Guardar como PDF</span></button>
+    <p class="saved"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Tu trabajo se guarda en este navegador</p>
   </section>
 
   <section class="card">
-    <h2>File</h2>
-    <p class="help" style="margin:0 0 12px">Start a blank plan, or open a Word file (.docx) to keep editing it. You can also drop a .docx onto the page.</p>
+    <h2>Archivo</h2>
+    <p class="help" style="margin:0 0 12px">Empieza un plan en blanco o abre un archivo Word (.docx) para seguir editándolo. También puedes soltar un .docx en la página.</p>
     <div style="display:grid;gap:8px">
-      <button type="button" class="btn ghost block js-new"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>New document</button>
-      <button type="button" class="btn ghost block js-open"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Open Word file</button>
-      <a class="btn ghost block" href="batch.html" title="Make many .docx and .odt files smaller, one at a time"><svg viewBox="0 0 16 16"><path d="M5.5 2.5h7v7M12.5 2.5 7 8M3 6v7h7"/></svg>Shrink many files</a>
+      <button type="button" class="btn ghost block js-new"><svg viewBox="0 0 16 16"><path d="M9 2H4.5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.5zM9 2v3.5h3.5M8 8v4M6 10h4"/></svg>Documento nuevo</button>
+      <button type="button" class="btn ghost block js-open"><svg viewBox="0 0 16 16"><path d="M2.5 5V3.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1V5M2 6.5h12l-1 6.5H3z"/></svg>Abrir archivo Word</button>
+      <a class="btn ghost block" href="batch.html" title="Reduce muchos archivos .docx y .odt, uno a uno"><svg viewBox="0 0 16 16"><path d="M5.5 2.5h7v7M12.5 2.5 7 8M3 6v7h7"/></svg>Reducir muchos archivos</a>
     </div>
   </section>
 </aside>
 
-<div class="bar" role="toolbar" aria-label="Download">
-  <select class="tpl-select js-tpl bar-tpl" aria-label="Add an exercise from a template"></select>
-  <div class="seg" role="group" aria-label="Photo quality">
-    <button type="button" data-q="screen">Smaller file</button>
-    <button type="button" data-q="print">Print quality</button>
+<div class="bar" role="toolbar" aria-label="Descargar">
+  <select class="tpl-select js-tpl bar-tpl" aria-label="Añadir un ejercicio guardado"></select>
+  <div class="seg" role="group" aria-label="Calidad de las fotos">
+    <button type="button" data-q="screen">Ligero</button>
+    <button type="button" data-q="print">Imprimir</button>
   </div>
   <button type="button" class="btn ghost js-pdf"><span>PDF</span></button>
-  <button type="button" class="btn ghost js-open">Open</button>
-  <button type="button" class="btn ghost js-new">New</button>
-  <button type="button" class="btn primary js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Download Word file</span></button>
+  <button type="button" class="btn ghost js-open">Abrir</button>
+  <button type="button" class="btn ghost js-new">Nuevo</button>
+  <button type="button" class="btn primary js-save"><i class="fill"></i><svg viewBox="0 0 16 16"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg><span>Descargar Word</span></button>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>Undo</button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>Deshacer</button></div>
 <input type="file" id="picker" accept="image/*" multiple hidden>
 <input type="file" id="docPicker" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
 
@@ -364,8 +364,8 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
   const GAP_CM = 0.12;                                                        // width of a space in Arial 12pt
   const SIZES = { s: 2.6, m: 4, l: 6 };                                       // max row height (cm)
   const QUALITY = {
-    screen: { dpi: 150, q: 0.78, bpp: 0.16, help: '150 dpi. Small file, good for screen and email.' },
-    print: { dpi: 300, q: 0.86, bpp: 0.11, help: '300 dpi. Sharper on paper, larger file.' }
+    screen: { dpi: 150, q: 0.78, bpp: 0.16, help: '150 dpi. Archivo pequeño, ideal para pantalla y correo.' },
+    print: { dpi: 300, q: 0.86, bpp: 0.11, help: '300 dpi. Más nítido en papel, archivo más grande.' }
   };
   const EMU = 360000;                                                         // EMU per cm
   const CM_PX = 96 / 2.54;
@@ -419,7 +419,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
   const newBlock = (type, text = '') => ({ id: ++uid, type, text, size: 'l', images: [] });
   const find = id => state.blocks.findIndex(b => b.id === id);
   const snapshot = () => state.blocks.map(b => ({ ...b, images: [...b.images] }));
-  const fileName = () => (state.title.trim() || 'document').replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 80) || 'document';
+  const fileName = () => (state.title.trim() || 'documento').replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 80) || 'documento';
   const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
 
   // ---------- Rendering ----------
@@ -524,7 +524,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       const m = document.createElement('div');
       m.className = 'pgbreak';
       m.setAttribute('aria-hidden', 'true');
-      m.innerHTML = `<span>Page ${n}</span>`;
+      m.innerHTML = `<span>Página ${n}</span>`;
       el.before(m);
     }
   }
@@ -558,8 +558,8 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       li.append(b);
       ol.append(li);
     };
-    item('doc', state.title, 'Untitled document', () => jumpTo('title'), '', lastBlockId === null && document.activeElement === $('#title'));
-    state.blocks.forEach(b => item(b.type, b.text, b.type === 'deo' ? 'Untitled section' : 'Untitled exercise', () => jumpTo(b.id),
+    item('doc', state.title, 'Documento sin título', () => jumpTo('title'), '', lastBlockId === null && document.activeElement === $('#title'));
+    state.blocks.forEach(b => item(b.type, b.text, b.type === 'deo' ? 'Sección sin título' : 'Ejercicio sin nombre', () => jumpTo(b.id),
       b.images.length ? `<span class="n">${icon.img}${b.images.length}</span>` : '', b.id === lastBlockId));
   }
 
@@ -575,7 +575,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     el.dataset.id = b.id;
     const isDeo = b.type === 'deo';
 
-    const kind = button('kind', '', isDeo ? 'Turn into an exercise' : 'Turn into a section heading', () => {
+    const kind = button('kind', '', isDeo ? 'Convertir en ejercicio' : 'Convertir en título de sección', () => {
       b.type = isDeo ? 'vezba' : 'deo';
       if (b.type === 'deo' && b.images.length) {
         // Photos move to a new exercise right below, so nothing is lost
@@ -584,15 +584,15 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       }
       render({ id: b.id });
     });
-    kind.innerHTML = icon.swap + (isDeo ? 'Heading' : 'Exercise');
+    kind.innerHTML = icon.swap + (isDeo ? 'Título' : 'Ejercicio');
 
     const line = document.createElement('div');
     line.className = 'line';
     const t = document.createElement('input');
     t.className = 'txt';
     t.value = b.text;
-    t.placeholder = isDeo ? 'Section heading, e.g. WARM-UP' : 'Exercise name';
-    t.setAttribute('aria-label', isDeo ? 'Section heading' : 'Exercise name');
+    t.placeholder = isDeo ? 'Título de sección, p. ej. CALENTAMIENTO' : 'Nombre del ejercicio';
+    t.setAttribute('aria-label', isDeo ? 'Título de sección' : 'Nombre del ejercicio');
     t.autocomplete = 'off';
     t.addEventListener('input', () => { b.text = t.value; persist(); relayout(); });
     t.addEventListener('focus', () => { lastBlockId = b.id; renderOutline(); });
@@ -602,8 +602,8 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       const lt = document.createElement('div');
       lt.className = 'line-tools';
       if (b.images.length) lt.append(sizeEl(b));
-      const chip = button('chip', '', 'Add photos to this exercise', () => pick(b));
-      chip.innerHTML = (b.images.length ? icon.plus + 'More photos' : icon.img + 'Add photos');
+      const chip = button('chip', '', 'Añadir fotos a este ejercicio', () => pick(b));
+      chip.innerHTML = (b.images.length ? icon.plus + 'Más fotos' : icon.img + 'Añadir fotos');
       lt.append(chip);
       line.append(lt);
     }
@@ -611,9 +611,9 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     const tools = document.createElement('div');
     tools.className = 'tools';
     tools.append(
-      iconBtn('up', 'Move up', () => move(i, -1), i === 0),
-      iconBtn('down', 'Move down', () => move(i, 1), i === state.blocks.length - 1),
-      iconBtn('x', isDeo ? 'Delete section heading' : 'Delete exercise', () => removeBlock(i), false, 'del')
+      iconBtn('up', 'Subir', () => move(i, -1), i === 0),
+      iconBtn('down', 'Bajar', () => move(i, 1), i === state.blocks.length - 1),
+      iconBtn('x', isDeo ? 'Eliminar título de sección' : 'Eliminar ejercicio', () => removeBlock(i), false, 'del')
     );
 
     el.append(kind, line, tools);
@@ -654,10 +654,10 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     tile.tabIndex = 0;
     tile.style.height = px(h);
     tile.style.width = px(h * img.w / img.h);
-    tile.setAttribute('aria-label', `Photo ${ii + 1} of ${b.images.length}. Alt plus arrow keys to move, Delete to remove.`);
+    tile.setAttribute('aria-label', `Foto ${ii + 1} de ${b.images.length}. Alt y flechas para mover, Supr para quitar.`);
     const im = document.createElement('img');
     im.src = img.url; im.alt = ''; im.draggable = false;
-    const rm = iconBtn('x', 'Remove photo', () => removeImage(b, ii), false);
+    const rm = iconBtn('x', 'Quitar foto', () => removeImage(b, ii), false);
     rm.className = 'rm';
     tile.append(im, rm);
 
@@ -696,9 +696,9 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     const size = document.createElement('div');
     size.className = 'size';
     size.setAttribute('role', 'group');
-    size.setAttribute('aria-label', 'Photo size');
-    [['s', 'Small'], ['m', 'Medium'], ['l', 'Large']].forEach(([k, label]) => {
-      const sb = button('', label, label + ' photos', () => { b.size = k; render(); });
+    size.setAttribute('aria-label', 'Tamaño de las fotos');
+    [['s', 'Pequeño'], ['m', 'Mediano'], ['l', 'Grande']].forEach(([k, label]) => {
+      const sb = button('', label, 'Fotos: ' + label.toLowerCase(), () => { b.size = k; render(); });
       sb.setAttribute('aria-pressed', b.size === k);
       size.append(sb);
     });
@@ -756,14 +756,14 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     const b = state.blocks[i];
     state.blocks.splice(i, 1);
     render();
-    if (b.text || b.images.length) toast(b.type === 'deo' ? 'Section heading deleted.' : 'Exercise deleted.', () => { state.blocks = before; render(); });
+    if (b.text || b.images.length) toast(b.type === 'deo' ? 'Título de sección eliminado.' : 'Ejercicio eliminado.', () => { state.blocks = before; render(); });
   }
 
   function removeImage(b, ii) {
     const before = snapshot();
     b.images.splice(ii, 1);
     render();
-    toast('Photo removed.', () => { state.blocks = before; render(); });
+    toast('Foto quitada.', () => { state.blocks = before; render(); });
   }
 
   let dragImg = null;
@@ -826,7 +826,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       } catch (e) { bad.push(f.name); }
     }
     render();
-    if (bad.length) toast("Can't open: " + bad.join(', '));
+    if (bad.length) toast('No se pudo abrir: ' + bad.join(', '));
   }
 
   const isFileDrag = e => [...(e.dataTransfer?.types || [])].includes('Files');
@@ -921,7 +921,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     ctx.drawImage(src, 0, 0, w, h);
     src.close?.();
     const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
-    if (!blob) throw new Error('compression failed');
+    if (!blob) throw new Error('no se pudo comprimir una foto');
     return blob.arrayBuffer();
   }
 
@@ -1001,18 +1001,18 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     const setLabel = (text, p) => btns.forEach(b => { b.disabled = true; b.querySelector('span').textContent = text; b.style.setProperty('--p', p); });
     try {
       const orig = state.blocks.reduce((a, b) => a + b.images.reduce((x, i) => x + i.file.size, 0), 0);
-      const blob = await buildDocx((i, t) => setLabel(`Processing photo ${i} of ${t}`, i / t));
+      const blob = await buildDocx((i, t) => setLabel(`Procesando foto ${i} de ${t}`, i / t));
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = fileName() + '.docx';
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      toast(orig ? `Downloaded. Photos ${fmtSize(orig)}, Word file ${fmtSize(blob.size)}.` : `Downloaded. Word file ${fmtSize(blob.size)}.`);
+      toast(orig ? `Descargado. Fotos ${fmtSize(orig)}, archivo Word ${fmtSize(blob.size)}.` : `Descargado. Archivo Word ${fmtSize(blob.size)}.`);
     } catch (e) {
-      toast('Download failed: ' + e.message);
+      toast('No se pudo descargar: ' + e.message);
     } finally {
       busy = false;
-      btns.forEach(b => { b.disabled = false; b.style.setProperty('--p', 0); b.querySelector('span').textContent = 'Download Word file'; });
+      btns.forEach(b => { b.disabled = false; b.style.setProperty('--p', 0); b.querySelector('span').textContent = 'Descargar Word'; });
     }
   }
 
@@ -1022,19 +1022,19 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
   async function loadTemplates() {
     try { templates = await TemplateStore.all(); } catch (e) { templates = []; }
     const groups = new Map();
-    for (const t of templates) { const k = t.section || 'Other'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
+    for (const t of templates) { const k = t.section || 'Otros'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
     $$('.js-tpl').forEach(sel => {
       sel.textContent = '';
-      sel.append(new Option(templates.length ? `Add an exercise (${templates.length})…` : 'No templates yet', ''));
+      sel.append(new Option(templates.length ? `Añadir un ejercicio (${templates.length})…` : 'Aún no hay ejercicios', ''));
       for (const [sec, ts] of groups) {
         const og = document.createElement('optgroup');
         og.label = sec;
-        ts.forEach(t => og.append(new Option(t.name + (t.images.length ? `  ·  ${t.images.length} ${t.images.length === 1 ? 'photo' : 'photos'}` : ''), t.id)));
+        ts.forEach(t => og.append(new Option(t.name + (t.images.length ? `  ·  ${t.images.length} ${t.images.length === 1 ? 'foto' : 'fotos'}` : ''), t.id)));
         sel.append(og);
       }
       sel.value = '';
     });
-    $$('.tpl-help').forEach(p => { p.textContent = templates.length ? 'Choose an exercise and it appears in its section of the document.' : 'Import the templates file on the Templates page first.'; });
+    $$('.tpl-help').forEach(p => { p.textContent = templates.length ? 'Elige un ejercicio y aparecerá en su sección del documento.' : 'Primero importa los ejercicios en la página Ejercicios.'; });
   }
 
   // A template goes to the end of its section; a missing section heading is added first
@@ -1060,7 +1060,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     lastBlockId = v.id;
     render();
     blocksEl.querySelector(`[data-id="${v.id}"]`)?.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    toast(`Added “${t.name}”.`, () => { state.blocks = before; render(); });
+    toast(`Añadido “${t.name}”.`, () => { state.blocks = before; render(); });
   }
   $$('.js-tpl').forEach(sel => sel.addEventListener('change', () => {
     const t = templates.find(x => x.id === sel.value);
@@ -1106,7 +1106,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
           row.className = 'pr';
           row.style.marginBottom = ((ri < rows.length - 1 ? GAP_CM : AFTER) + DESCENT) + 'cm';
           for (const img of r.images) {
-            label(`Preparing photo ${++n} of ${total}`);
+            label(`Preparando foto ${++n} de ${total}`);
             const wCm = r.h * img.w / img.h, wPx = Math.ceil(wCm / 2.54 * dpi);
             const key = `${img.id}:${wPx}:${q}`;
             let u = pdfPhotos.get(key);
@@ -1119,19 +1119,19 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
           page.append(row);
         }
       }
-      label('Opening print window');
+      label('Abriendo la ventana de impresión');
       document.body.append(root);
       await Promise.all([...root.querySelectorAll('img')].map(i => i.decode().catch(() => {})));
       const docTitle = document.title;
       document.title = fileName();                 // becomes the suggested PDF file name
       window.addEventListener('afterprint', () => { document.title = docTitle; root.remove(); }, { once: true });
-      toast('In the print window, choose “Save as PDF”.');
+      toast('En la ventana de impresión, elige “Guardar como PDF”.');
       window.print();
     } catch (e) {
-      toast('PDF failed: ' + e.message);
+      toast('No se pudo crear el PDF: ' + e.message);
     } finally {
       busy = false;
-      btns.forEach(b => { b.disabled = false; b.querySelector('span').textContent = b.closest('.bar') ? 'PDF' : 'Save as PDF'; });
+      btns.forEach(b => { b.disabled = false; b.querySelector('span').textContent = b.closest('.bar') ? 'PDF' : 'Guardar como PDF'; });
     }
   }
   $$('.js-pdf').forEach(b => b.addEventListener('click', savePdf));
@@ -1149,12 +1149,12 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
 
   // Reads files made here (by style) and older plans like the February one (by bold/underline).
   async function openDocx(file) {
-    const notWord = () => toast(`"${file.name}" is not a Word file this page can open.`);
+    const notWord = () => toast(`“${file.name}” no es un archivo Word que esta página pueda abrir.`);
     let zip;
     try { zip = await JSZip.loadAsync(file); } catch (e) { return notWord(); }
     const docXml = await zip.file('word/document.xml')?.async('string');
     if (!docXml) return notWord();
-    toast(`Opening "${file.name}"…`);
+    toast(`Abriendo “${file.name}”…`);
     const parse = x => new DOMParser().parseFromString(x, 'application/xml');
     const rels = {};
     const relsXml = await zip.file('word/_rels/document.xml.rels')?.async('string');
@@ -1227,7 +1227,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
       b.size = best;
     }
 
-    if (!title && !blocks.length) return toast(`Nothing to open in "${file.name}".`);
+    if (!title && !blocks.length) return toast(`No hay nada que abrir en “${file.name}”.`);
     const before = { title: state.title, blocks: snapshot() };
     state.title = title;
     state.blocks = blocks;
@@ -1235,7 +1235,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     render();
     window.scrollTo({ top: 0 });
     const n = blocks.reduce((a, b) => a + b.images.length, 0);
-    toast(`Opened "${file.name}" with ${n} ${n === 1 ? 'photo' : 'photos'}${skipped ? ` (${skipped} could not be read)` : ''}.`,
+    toast(`Abierto “${file.name}” con ${n} ${n === 1 ? 'foto' : 'fotos'}${skipped ? ` (${skipped} no se pudieron leer)` : ''}.`,
       () => { state.title = before.title; state.blocks = before.blocks; render(); });
   }
 
@@ -1267,7 +1267,7 @@ select option,select optgroup{background-color:#2c2c2e;color:#f5f5f7} /* the ope
     state.blocks = starter();
     render({ id: 'title' });
     if (before.title || before.blocks.some(b => b.text || b.images.length)) {
-      toast('Started a new document.', () => { state.title = before.title; state.blocks = before.blocks; render(); });
+      toast('Documento nuevo empezado.', () => { state.title = before.title; state.blocks = before.blocks; render(); });
     }
   }));
   document.addEventListener('keydown', e => {
