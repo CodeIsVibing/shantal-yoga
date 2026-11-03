@@ -22,7 +22,8 @@ const TemplateStore = (() => {
   // Accent-, case- and punctuation-free form, used to match section headings and names
   const plain = s => (s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
   const sectionRank = s => { const i = SECTIONS.findIndex(x => plain(x) === plain(s)); return i < 0 ? SECTIONS.length : i; };
-  const sort = list => list.sort((a, b) => sectionRank(a.section) - sectionRank(b.section) || (b.uses || 0) - (a.uses || 0) || a.name.localeCompare(b.name));
+  // Sections in plan order, templates A to Z inside each (accents and case ignored)
+  const sort = list => list.sort((a, b) => sectionRank(a.section) - sectionRank(b.section) || a.name.localeCompare(b.name, 'es', { sensitivity: 'base', numeric: true }));
 
   async function all() { return sort(await run('readonly', s => s.getAll()) || []); }
   async function put(t) { t.updated = Date.now(); await run('readwrite', s => s.put(t)); changed(); }

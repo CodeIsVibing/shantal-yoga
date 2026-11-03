@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.6.1] - 2026-11-03
+
+### Changed
+- Templates are listed A to Z inside each section, on the Templates page and in the templates menu. Accents and capital letters do not change the order.
+
 ## [1.6.0] - 2026-11-03
 
 ### Changed
