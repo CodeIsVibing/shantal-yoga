@@ -2,6 +2,16 @@
 
 All notable changes to this project are listed here. Versions follow semantic versioning.
 
+## [1.6.3] - 2026-11-03
+
+### Fixed
+- The open list of the templates dropdown is dark with light text in every browser. Before, some browsers showed white text on a white list.
+- "Untitled" lines in the outline and "No photos" on template cards are easier to read.
+
+### Changed
+- "Manage templates" is a full-width button with an icon.
+- The templates dropdown reads "Add an exercise (194)…", short enough that the arrow never covers it.
+
 ## [1.6.2] - 2026-11-03
 
 ### Changed
